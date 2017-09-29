@@ -743,13 +743,31 @@ InitLists( )
 	float dz = BOXSIZE / 2.f;
 	glutSetWindow( MainWindow );
 
+	float x = 0;
+	float y = 0;
+	float z = 0;
+	float r = .1;
+	float theta;
+	int numPoints = 1000;
+
 	// create the object:
 
 	BoxList = glGenLists( 1 );
 	glNewList( BoxList, GL_COMPILE );
 
-		glBegin( GL_QUADS );
+		glBegin(GL_LINE_STRIP);
+			for (int i=0; i <= numPoints; i++) {
+				theta = 2. * M_PI * i / (numPoints/4);
+				x = r * cos(theta);
+				y = r * sin(theta);
+				glVertex3f(x, y, z);
+				z += .001;
+				r += (.9) / numPoints;
+			}
+		glEnd();
 
+		/*glBegin( GL_QUADS );
+			
 			glColor3f( 0., 0., 1. );
 			glNormal3f( 0., 0.,  1. );
 				glVertex3f( -dx, -dy,  dz );
@@ -793,7 +811,7 @@ InitLists( )
 				glVertex3f(  dx, -dy, -dz );
 				glVertex3f(  dx, -dy,  dz );
 
-		glEnd( );
+		glEnd( );*/
 
 	glEndList( );
 
