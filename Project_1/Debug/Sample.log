@@ -1,11 +1,19 @@
 ﻿  sample.cpp
-c:\src\cs-450\project_1\sample.cpp(749): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\src\cs-450\project_1\sample.cpp(760): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\src\cs-450\project_1\sample.cpp(761): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\src\cs-450\project_1\sample.cpp(762): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\src\cs-450\project_1\sample.cpp(764): warning C4305: '+=': truncation from 'double' to 'float'
-c:\src\cs-450\project_1\sample.cpp(765): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\src\cs-450\project_1\sample.cpp(1162): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\project_1\sample.cpp(761): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\project_1\sample.cpp(774): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\project_1\sample.cpp(775): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\project_1\sample.cpp(776): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\project_1\sample.cpp(779): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\project_1\sample.cpp(800): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\project_1\sample.cpp(810): warning C4305: '+=': truncation from 'double' to 'float'
+c:\src\cs-450\project_1\sample.cpp(811): warning C4305: '-=': truncation from 'double' to 'float'
+c:\src\cs-450\project_1\sample.cpp(812): warning C4305: '-=': truncation from 'double' to 'float'
+c:\src\cs-450\project_1\sample.cpp(824): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\project_1\sample.cpp(834): warning C4305: '+=': truncation from 'double' to 'float'
+c:\src\cs-450\project_1\sample.cpp(835): warning C4305: '-=': truncation from 'double' to 'float'
+c:\src\cs-450\project_1\sample.cpp(836): warning C4305: '-=': truncation from 'double' to 'float'
+c:\src\cs-450\project_1\sample.cpp(842): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\project_1\sample.cpp(1191): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 sample.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
   Sample.vcxproj -> C:\src\CS-450\Project_1\.\Debug\Sample.exe
   Sample.vcxproj -> .\Debug/Sample.pdb (Full PDB)

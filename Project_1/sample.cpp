@@ -408,7 +408,7 @@ Display( )
 
 	glDisable( GL_DEPTH_TEST );
 	glColor3f( 0., 1., 1. );
-	DoRasterString( 0., 1., 0., "Text That Moves" );
+	//DoRasterString( 0., 1., 0., "Text That Moves" );
 
 
 	// draw some gratuitous text that is fixed on the screen:
@@ -743,75 +743,104 @@ InitLists( )
 	float dz = BOXSIZE / 2.f;
 	glutSetWindow( MainWindow );
 
-	float x = 0;
-	float y = 0;
-	float z = 0;
-	float r = .1;
-	float theta;
-	int numPoints = 1000;
+	int numPoints = 1000; //number of points to draw
+
+	float spiralX = 0; //Coordinate variables for spiral
+	float spiralY = 0;
+	float spiralZ = 0;
+	float r = 0; //radius
+	float theta; //controls rotation speed
+
+	float parabX = 0; //Coordinate variables for parabola
+	float parabY = 0;
+	float parabZ = 0.;
+	float ratio = 1.; //controls rotation of the parabolas around the Z-axis
+	int flip = 1; //used to flip drawing over x/y plane
+	float zOffset = 0; //used to move drawing up after it is flipped
+
+	float growthRate = .9 / numPoints; //rate at which points expand away from Z-axis
+
+	float color [3] = { 0., 1., 1. };
 
 	// create the object:
 
 	BoxList = glGenLists( 1 );
 	glNewList( BoxList, GL_COMPILE );
 
+		//draws upward spiral
 		glBegin(GL_LINE_STRIP);
 			for (int i=0; i <= numPoints; i++) {
+				//circle equation
 				theta = 2. * M_PI * i / (numPoints/4);
-				x = r * cos(theta);
-				y = r * sin(theta);
-				glVertex3f(x, y, z);
-				z += .001;
-				r += (.9) / numPoints;
+				spiralX = r * cos(theta);
+				spiralY = r * sin(theta);
+				
+				glVertex3f(spiralX, spiralY, spiralZ);
+				spiralZ += pow(growthRate * numPoints, 2) * 2 / numPoints; //pow(growthRate * 1000, 2) * 2 is max Z of parabola drawing
+				if (i <= numPoints / 2)
+					r += growthRate; //gradually expand radius outward of Z-axis
+				else
+					r -= growthRate; //halfway through decrease radius until it is back to 0
 			}
 		glEnd();
 
-		/*glBegin( GL_QUADS );
-			
-			glColor3f( 0., 0., 1. );
-			glNormal3f( 0., 0.,  1. );
-				glVertex3f( -dx, -dy,  dz );
-				glVertex3f(  dx, -dy,  dz );
-				glVertex3f(  dx,  dy,  dz );
-				glVertex3f( -dx,  dy,  dz );
+		//Parabola drawing
+		//draws it once regularly and once flipped
+		for (int repeat = 0; repeat < 2; repeat++) {
+			//draws parabolas in 2/4 XY plane quadrants
+			ratio = 1.;
+			while (ratio >= -1) {
+				parabX = 0;
+				parabY = 0;
 
-			glNormal3f( 0., 0., -1. );
-				glTexCoord2f( 0., 0. );
-				glVertex3f( -dx, -dy, -dz );
-				glTexCoord2f( 0., 1. );
-				glVertex3f( -dx,  dy, -dz );
-				glTexCoord2f( 1., 1. );
-				glVertex3f(  dx,  dy, -dz );
-				glTexCoord2f( 1., 0. );
-				glVertex3f(  dx, -dy, -dz );
+				glColor3f(color[0], color[1], color[2]);
+				glBegin(GL_LINE_STRIP);
+				for (int i = 0; i <= numPoints; i++) {
+					//3D parabola equation
+					parabZ = (pow(parabX, 2) + pow(parabY, 2)) * flip + zOffset;
+					glVertex3f(parabX, parabY, parabZ);
+					parabX += growthRate * ratio;
+					if (ratio >= 0)
+						parabY += growthRate * (1 - ratio);
+					else
+						parabY += growthRate * (1 + ratio);
+				}
+				glEnd();
 
-			glColor3f( 1., 0., 0. );
-			glNormal3f(  1., 0., 0. );
-				glVertex3f(  dx, -dy,  dz );
-				glVertex3f(  dx, -dy, -dz );
-				glVertex3f(  dx,  dy, -dz );
-				glVertex3f(  dx,  dy,  dz );
+				color[0] += .05;
+				color[1] -= .05;
+				ratio -= .1;
+			}
+			//draws parabolas in other 2 XY plane quadrants
+			//Basically the same as above except we are subtracting the growthRate instead of adding
+			ratio = 1.;
+			while (ratio >= -1) {
+				parabX = 0;
+				parabY = 0;
 
-			glNormal3f( -1., 0., 0. );
-				glVertex3f( -dx, -dy,  dz );
-				glVertex3f( -dx,  dy,  dz );
-				glVertex3f( -dx,  dy, -dz );
-				glVertex3f( -dx, -dy, -dz );
+				glColor3f(color[0], color[1], color[2]);
+				glBegin(GL_LINE_STRIP);
+				for (int i = 0; i <= numPoints; i++) {
+					parabZ = (pow(parabX, 2) + pow(parabY, 2)) * flip + zOffset;
+					glVertex3f(parabX, parabY, parabZ);
+					parabX -= growthRate * ratio;
+					if (ratio >= 0)
+						parabY -= growthRate * (1 - ratio);
+					else
+						parabY -= growthRate * (1 + ratio);
+				}
+				glEnd();
 
-			glColor3f( 0., 1., 0. );
-			glNormal3f( 0.,  1., 0. );
-				glVertex3f( -dx,  dy,  dz );
-				glVertex3f(  dx,  dy,  dz );
-				glVertex3f(  dx,  dy, -dz );
-				glVertex3f( -dx,  dy, -dz );
-
-			glNormal3f( 0., -1., 0. );
-				glVertex3f( -dx, -dy,  dz );
-				glVertex3f( -dx, -dy, -dz );
-				glVertex3f(  dx, -dy, -dz );
-				glVertex3f(  dx, -dy,  dz );
-
-		glEnd( );*/
+				color[1] += .05;
+				color[2] -= .05;
+				ratio -= .1;
+			}
+			flip = -1; //makes Z values negative instead of postive
+			color[0] = 0.; //reset color
+			color[1] = 1.;
+			color[2] = 1.;
+			zOffset = pow(growthRate * numPoints, 2) * 2; //pow(growthRate * numPoints, 2) is max Z of the tallest parabola, double it so tips of the flipped and non flipped parabolas meet
+		}
 
 	glEndList( );
 
