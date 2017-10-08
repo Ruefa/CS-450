@@ -88,6 +88,12 @@ const int LEFT   = { 4 };
 const int MIDDLE = { 2 };
 const int RIGHT  = { 1 };
 
+// blade parameters:
+
+#define BLADE_RADIUS		 1.0
+#define BLADE_WIDTH		 0.4
+float blade_rotate = 0.;
+
 
 // which projection:
 
@@ -179,7 +185,8 @@ int		DebugOn;				// != 0 means to print debugging info
 int		DepthCueOn;				// != 0 means to use intensity depth cueing
 int		DepthBufferOn;			// != 0 means to use the z-buffer
 int		DepthFightingOn;		// != 0 means to use the z-buffer
-GLuint	BoxList;				// object display list
+GLuint	HeliList;				// object display list
+GLuint  BladeList;
 int		MainWindow;				// window id for main graphics window
 float	Scale;					// scaling factor
 int		WhichColor;				// index into Colors[ ]
@@ -396,22 +403,29 @@ Display( )
 
 	// draw the current object:
 
-	glCallList( BoxList );
+	glCallList( HeliList );
 
 	if( DepthFightingOn != 0 )
 	{
 		glPushMatrix( );
 			glRotatef( 90.,   0., 1., 0. );
-			glCallList( BoxList );
+			glCallList(HeliList);
 		glPopMatrix( );
 	}
 
+	glTranslatef(0., 3., -1.5);
+	glScalef(4, 4, 4);
+	glRotatef(blade_rotate, 0, 1, 0);
+	glRotatef(90, 1, 0, 0);
+	glCallList(BladeList);
+
+	glTranslatef(0., 0., 0.);
 
 	// draw some gratuitous text that just rotates on top of the scene:
 
-	glDisable( GL_DEPTH_TEST );
+	/*glDisable( GL_DEPTH_TEST );
 	glColor3f( 0., 1., 1. );
-	DoRasterString( 0., 1., 0., "Text That Moves" );
+	DoRasterString( 0., 1., 0., "Text That Moves" );*/
 
 
 	// draw some gratuitous text that is fixed on the screen:
@@ -432,6 +446,7 @@ Display( )
 	glLoadIdentity( );
 	glColor3f( 1., 1., 1. );
 	DoRasterString( 5., 5., 0., "Text That Doesn't" );
+
 
 
 	// swap the double-buffered framebuffers:
@@ -784,8 +799,8 @@ InitLists( )
 
 	// create the object:
 
-	BoxList = glGenLists( 1 );
-	glNewList( BoxList, GL_COMPILE );
+	HeliList = glGenLists( 1 );
+	glNewList( HeliList, GL_COMPILE );
 
 		int i;
 		struct point *p0, *p1, *p2;
@@ -827,6 +842,23 @@ InitLists( )
 		glPopMatrix();
 
 	glEndList( );
+
+	BladeList = glGenLists(1);
+	glNewList(BladeList, GL_COMPILE);
+
+	glBegin(GL_TRIANGLES);
+		glColor3f(.5, .5, .5);
+
+		glVertex2f(BLADE_RADIUS, BLADE_WIDTH / 2.);
+		glVertex2f(0., 0.);
+		glVertex2f(BLADE_RADIUS, -BLADE_WIDTH / 2.);
+
+		glVertex2f(-BLADE_RADIUS, -BLADE_WIDTH / 2.);
+		glVertex2f(0., 0.);
+		glVertex2f(-BLADE_RADIUS, BLADE_WIDTH / 2.);
+	glEnd();
+
+	glEndList();
 
 
 	// create the axes:
