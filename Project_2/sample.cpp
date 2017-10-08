@@ -262,6 +262,9 @@ main( int argc, char *argv[ ] )
 	// (this will never return)
 
 	glutSetWindow( MainWindow );
+
+	glutIdleFunc(Animate);
+
 	glutMainLoop( );
 
 
@@ -281,8 +284,7 @@ main( int argc, char *argv[ ] )
 void
 Animate( )
 {
-	// put animation stuff in here -- change some global variables
-	// for Display( ) to find:
+	blade_rotate += 12;
 
 	// force a call to Display( ) next time it is convenient:
 
@@ -354,7 +356,7 @@ Display( )
 
 	// set the eye position, look-at position, and up-vector:
 
-	gluLookAt( 0., 0., 3.,     0., 0., 0.,     0., 1., 0. );
+	gluLookAt( 12., 5., 2.,     0., 0., 0.,     0., 1., 0. );
 
 
 	// rotate the scene:
@@ -413,13 +415,29 @@ Display( )
 		glPopMatrix( );
 	}
 
-	glTranslatef(0., 3., -1.5);
+	//Draw top blades
+	glPushMatrix();
+	glTranslatef(0., 2.9, -1.5);
 	glScalef(4, 4, 4);
 	glRotatef(blade_rotate, 0, 1, 0);
 	glRotatef(90, 1, 0, 0);
 	glCallList(BladeList);
+	glPopMatrix();
+	
+	//Draw back blades
+	glPushMatrix();
+	glTranslatef(0., 2.9, 9.);
+	glScalef(1.5, 1.5, 1.5);
+	glRotatef(blade_rotate, 1, 0, 0);
+	glRotatef(90, 0, 1, 0);
+	glCallList(BladeList);
+	glPopMatrix();
 
-	glTranslatef(0., 0., 0.);
+	glPushMatrix();
+	glTranslatef(0., 1.5, -12.);
+	glColor3f(0., 0., 1.);
+	glutSolidTeapot(2.0);
+	glPopMatrix();
 
 	// draw some gratuitous text that just rotates on top of the scene:
 
