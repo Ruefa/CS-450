@@ -16,6 +16,7 @@
 #include "glut.h"
 
 
+
 //	This is a sample OpenGL / GLUT program
 //
 //	The objective is to draw a 3d object and change the color of the axes
@@ -214,6 +215,8 @@ void	Visibility( int );
 
 void	Axes( float );
 void	HsvRgb( float[3], float [3] );
+
+#include "heli.cpp"
 
 // main program:
 
@@ -729,6 +732,42 @@ InitGraphics( )
 
 }
 
+float
+Dot(float v1[3], float v2[3])
+{
+	return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+}
+void
+Cross(float v1[3], float v2[3], float vout[3])
+{
+	float tmp[3];
+	tmp[0] = v1[1] * v2[2] - v2[1] * v1[2];
+	tmp[1] = v2[0] * v1[2] - v1[0] * v2[2];
+	tmp[2] = v1[0] * v2[1] - v2[0] * v1[1];
+	vout[0] = tmp[0];
+	vout[1] = tmp[1];
+	vout[2] = tmp[2];
+}
+float
+Unit(float vin[3], float vout[3])
+{
+	float dist = vin[0] * vin[0] + vin[1] * vin[1] + vin[2] * vin[2];
+	if (dist > 0.0)
+	{
+		dist = sqrt(dist);
+		vout[0] = vin[0] / dist;
+		vout[1] = vin[1] / dist;
+		vout[2] = vin[2] / dist;
+	}
+	else
+	{
+		vout[0] = vin[0];
+		vout[1] = vin[1];
+		vout[2] = vin[2];
+	}
+	return dist;
+}
+
 
 // initialize the display lists that will not change:
 // (a display list is a way to store opengl commands in
@@ -748,52 +787,44 @@ InitLists( )
 	BoxList = glGenLists( 1 );
 	glNewList( BoxList, GL_COMPILE );
 
-		glBegin( GL_QUADS );
+		int i;
+		struct point *p0, *p1, *p2;
+		struct tri *tp;
+		float p01[3], p02[3], n[3];
 
-			glColor3f( 0., 0., 1. );
-			glNormal3f( 0., 0.,  1. );
-				glVertex3f( -dx, -dy,  dz );
-				glVertex3f(  dx, -dy,  dz );
-				glVertex3f(  dx,  dy,  dz );
-				glVertex3f( -dx,  dy,  dz );
+		glPushMatrix();
+		glTranslatef(0., -1., 0.);
+		glRotatef(97., 0., 1., 0.);
+		glRotatef(-15., 0., 0., 1.);
+		glBegin(GL_TRIANGLES);
+		for (i = 0, tp = Helitris; i < Helintris; i++, tp++)
+		{
+			p0 = &Helipoints[tp->p0];
+			p1 = &Helipoints[tp->p1];
+			p2 = &Helipoints[tp->p2];
 
-			glNormal3f( 0., 0., -1. );
-				glTexCoord2f( 0., 0. );
-				glVertex3f( -dx, -dy, -dz );
-				glTexCoord2f( 0., 1. );
-				glVertex3f( -dx,  dy, -dz );
-				glTexCoord2f( 1., 1. );
-				glVertex3f(  dx,  dy, -dz );
-				glTexCoord2f( 1., 0. );
-				glVertex3f(  dx, -dy, -dz );
+			// fake "lighting" from above:
 
-			glColor3f( 1., 0., 0. );
-			glNormal3f(  1., 0., 0. );
-				glVertex3f(  dx, -dy,  dz );
-				glVertex3f(  dx, -dy, -dz );
-				glVertex3f(  dx,  dy, -dz );
-				glVertex3f(  dx,  dy,  dz );
+			p01[0] = p1->x - p0->x;
+			p01[1] = p1->y - p0->y;
+			p01[2] = p1->z - p0->z;
+			p02[0] = p2->x - p0->x;
+			p02[1] = p2->y - p0->y;
+			p02[2] = p2->z - p0->z;
+			Cross(p01, p02, n);
+			Unit(n, n);
+			n[1] = fabs(n[1]);
+			n[1] += .25;
+			if (n[1] > 1.)
+				n[1] = 1.;
+			glColor3f(0., n[1], 0.);
 
-			glNormal3f( -1., 0., 0. );
-				glVertex3f( -dx, -dy,  dz );
-				glVertex3f( -dx,  dy,  dz );
-				glVertex3f( -dx,  dy, -dz );
-				glVertex3f( -dx, -dy, -dz );
-
-			glColor3f( 0., 1., 0. );
-			glNormal3f( 0.,  1., 0. );
-				glVertex3f( -dx,  dy,  dz );
-				glVertex3f(  dx,  dy,  dz );
-				glVertex3f(  dx,  dy, -dz );
-				glVertex3f( -dx,  dy, -dz );
-
-			glNormal3f( 0., -1., 0. );
-				glVertex3f( -dx, -dy,  dz );
-				glVertex3f( -dx, -dy, -dz );
-				glVertex3f(  dx, -dy, -dz );
-				glVertex3f(  dx, -dy,  dz );
-
-		glEnd( );
+			glVertex3f(p0->x, p0->y, p0->z);
+			glVertex3f(p1->x, p1->y, p1->z);
+			glVertex3f(p2->x, p2->y, p2->z);
+		}
+		glEnd();
+		glPopMatrix();
 
 	glEndList( );
 
