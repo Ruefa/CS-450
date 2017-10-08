@@ -44,7 +44,7 @@
 
 // title of these windows:
 
-const char *WINDOWTITLE = { "OpenGL / GLUT Sample -- Joe Graphics" };
+const char *WINDOWTITLE = { "OpenGL / GLUT Sample -- Alex Ruef" };
 const char *GLUITITLE   = { "User Interface Window" };
 
 
@@ -592,6 +592,7 @@ DoViewMenu(int id)
 {
 	which_view = id;
 
+	Reset();
 	glutSetWindow(MainWindow);
 	glutPostRedisplay();
 }
@@ -1000,32 +1001,34 @@ MouseButton( int button, int state, int x, int y )
 void
 MouseMotion( int x, int y )
 {
-	if( DebugOn != 0 )
-		fprintf( stderr, "MouseMotion: %d, %d\n", x, y );
+	if (!which_view) {
+		if (DebugOn != 0)
+			fprintf(stderr, "MouseMotion: %d, %d\n", x, y);
 
 
-	int dx = x - Xmouse;		// change in mouse coords
-	int dy = y - Ymouse;
+		int dx = x - Xmouse;		// change in mouse coords
+		int dy = y - Ymouse;
 
-	if( ( ActiveButton & LEFT ) != 0 )
-	{
-		Xrot += ( ANGFACT*dy );
-		Yrot += ( ANGFACT*dx );
+		if ((ActiveButton & LEFT) != 0)
+		{
+			Xrot += (ANGFACT*dy);
+			Yrot += (ANGFACT*dx);
+		}
+
+
+		if ((ActiveButton & MIDDLE) != 0)
+		{
+			Scale += SCLFACT * (float)(dx - dy);
+
+			// keep object from turning inside-out or disappearing:
+
+			if (Scale < MINSCALE)
+				Scale = MINSCALE;
+		}
+
+		Xmouse = x;			// new current position
+		Ymouse = y;
 	}
-
-
-	if( ( ActiveButton & MIDDLE ) != 0 )
-	{
-		Scale += SCLFACT * (float) ( dx - dy );
-
-		// keep object from turning inside-out or disappearing:
-
-		if( Scale < MINSCALE )
-			Scale = MINSCALE;
-	}
-
-	Xmouse = x;			// new current position
-	Ymouse = y;
 
 	glutSetWindow( MainWindow );
 	glutPostRedisplay( );
