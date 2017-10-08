@@ -92,7 +92,9 @@ const int RIGHT  = { 1 };
 
 #define BLADE_RADIUS		 1.0
 #define BLADE_WIDTH		 0.4
-float blade_rotate = 0.;
+#define BLADE_ROTATE_SPEED	 12
+float top_blade_rotate = 0.;
+float back_blade_rotate = 0.;
 
 
 // which projection:
@@ -193,6 +195,7 @@ int		WhichColor;				// index into Colors[ ]
 int		WhichProjection;		// ORTHO or PERSP
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
+int		which_view;				//switch for cockpit or external views
 
 
 // function prototypes:
@@ -284,7 +287,8 @@ main( int argc, char *argv[ ] )
 void
 Animate( )
 {
-	blade_rotate += 12;
+	top_blade_rotate += BLADE_ROTATE_SPEED;
+	back_blade_rotate += 3 * BLADE_ROTATE_SPEED;
 
 	// force a call to Display( ) next time it is convenient:
 
@@ -342,9 +346,9 @@ Display( )
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity( );
-	if( WhichProjection == ORTHO )
-		glOrtho( -3., 3.,     -3., 3.,     0.1, 1000. );
-	else
+	//if( WhichProjection == ORTHO )
+		//glOrtho( -3., 3.,     -3., 3.,     0.1, 1000. );
+	//else
 		gluPerspective( 90., 1.,	0.1, 1000. );
 
 
@@ -356,7 +360,12 @@ Display( )
 
 	// set the eye position, look-at position, and up-vector:
 
-	gluLookAt( 12., 5., 2.,     0., 0., 0.,     0., 1., 0. );
+	if (!which_view) {
+		gluLookAt(12., 5., 2., 0., 0., 0., 0., 1., 0.);
+	}
+	else {	//cockpit view
+		gluLookAt(-0.4, 1.8, -4.9, 0., 0., -10., 0., 1., 0.);
+	}
 
 
 	// rotate the scene:
@@ -417,18 +426,18 @@ Display( )
 
 	//Draw top blades
 	glPushMatrix();
-	glTranslatef(0., 2.9, -1.5);
-	glScalef(4, 4, 4);
-	glRotatef(blade_rotate, 0, 1, 0);
+	glTranslatef(0., 2.9, -2);
+	glScalef(5, 5, 5);
+	glRotatef(top_blade_rotate, 0, 1, 0);
 	glRotatef(90, 1, 0, 0);
 	glCallList(BladeList);
 	glPopMatrix();
 	
 	//Draw back blades
 	glPushMatrix();
-	glTranslatef(0., 2.9, 9.);
+	glTranslatef(0.5, 2.5, 9.);
 	glScalef(1.5, 1.5, 1.5);
-	glRotatef(blade_rotate, 1, 0, 0);
+	glRotatef(back_blade_rotate, 1, 0, 0);
 	glRotatef(90, 0, 1, 0);
 	glCallList(BladeList);
 	glPopMatrix();
@@ -456,14 +465,14 @@ Display( )
 	// the modelview matrix is reset to identity as we don't
 	// want to transform these coordinates
 
-	glDisable( GL_DEPTH_TEST );
+	/*glDisable( GL_DEPTH_TEST );
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity( );
 	gluOrtho2D( 0., 100.,     0., 100. );
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity( );
 	glColor3f( 1., 1., 1. );
-	DoRasterString( 5., 5., 0., "Text That Doesn't" );
+	DoRasterString( 5., 5., 0., "Text That Doesn't" );*/
 
 
 
@@ -578,6 +587,15 @@ DoProjectMenu( int id )
 	glutPostRedisplay( );
 }
 
+void
+DoViewMenu(int id)
+{
+	which_view = id;
+
+	glutSetWindow(MainWindow);
+	glutPostRedisplay();
+}
+
 
 // use glut to display a string of characters using a raster font:
 
@@ -641,6 +659,10 @@ InitMenus( )
 		glutAddMenuEntry( ColorNames[i], i );
 	}
 
+	int view_menu = glutCreateMenu(DoViewMenu);
+	glutAddMenuEntry("External", 0);
+	glutAddMenuEntry("Cockpit", 1);
+
 	int axesmenu = glutCreateMenu( DoAxesMenu );
 	glutAddMenuEntry( "Off",  0 );
 	glutAddMenuEntry( "On",   1 );
@@ -666,12 +688,13 @@ InitMenus( )
 	glutAddMenuEntry( "Perspective",   PERSP );
 
 	int mainmenu = glutCreateMenu( DoMainMenu );
+	glutAddSubMenu("View", view_menu);
 	glutAddSubMenu(   "Axes",          axesmenu);
 	glutAddSubMenu(   "Colors",        colormenu);
 	glutAddSubMenu(   "Depth Buffer",  depthbuffermenu);
 	glutAddSubMenu(   "Depth Fighting",depthfightingmenu);
 	glutAddSubMenu(   "Depth Cue",     depthcuemenu);
-	glutAddSubMenu(   "Projection",    projmenu );
+	//glutAddSubMenu(   "Projection",    projmenu );
 	glutAddMenuEntry( "Reset",         RESET );
 	glutAddSubMenu(   "Debug",         debugmenu);
 	glutAddMenuEntry( "Quit",          QUIT );
