@@ -90,6 +90,12 @@ const int LEFT   = { 4 };
 const int MIDDLE = { 2 };
 const int RIGHT  = { 1 };
 
+// Texture
+
+unsigned char *Texture;
+int textWidth = 920;
+int textHeight = 584;
+
 
 // which projection:
 
@@ -396,7 +402,13 @@ Display( )
 
 	// draw the current object:
 
+	glEnable(GL_TEXTURE_2D);
+	//glTexImage2D(GL_TEXTURE_2D, 0, 3, textWidth, textHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, Texture);
+	glPushMatrix;
+	glRotatef(-92, 0, 1, 0);
 	glCallList( sphereList );
+	glPopMatrix;
+	glDisable(GL_TEXTURE_2D);
 
 	/*if( DepthFightingOn != 0 )
 	{
@@ -745,6 +757,19 @@ InitLists( )
 	float dy = BOXSIZE / 2.f;
 	float dz = BOXSIZE / 2.f;
 	glutSetWindow( MainWindow );
+
+	Texture = BmpToTexture("Resources/it.bmp", &textWidth, &textHeight);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, textWidth, textHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, Texture);
 
 	// create the object:
 

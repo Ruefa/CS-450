@@ -7,7 +7,9 @@ c:\src\cs-450\project_3\sphere.cpp(65): warning C4244: 'initializing': conversio
 c:\src\cs-450\project_3\sphere.cpp(66): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 c:\src\cs-450\project_3\sphere.cpp(81): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 c:\src\cs-450\project_3\sphere.cpp(82): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\src\cs-450\project_3\sample.cpp(1102): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\project_3\sample.cpp(407): warning C4551: function call missing argument list
+c:\src\cs-450\project_3\sample.cpp(410): warning C4551: function call missing argument list
+c:\src\cs-450\project_3\sample.cpp(1127): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 sample.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
   Sample.vcxproj -> C:\src\CS-450\Project_3\.\Debug\Sample.exe
   Sample.vcxproj -> .\Debug/Sample.pdb (Full PDB)
