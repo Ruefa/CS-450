@@ -30,7 +30,7 @@ DrawPoint( struct point *p )
 }
 
 void
-MjbSphere( float radius, int slices, int stacks )
+MjbSphere( float radius, int slices, int stacks, float distortS, float distortT )
 {
 	struct point top, bot;		// top, bottom points
 	struct point *p;
