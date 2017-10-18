@@ -229,6 +229,7 @@ float Time;
 #define MS_PER_CYCLE 10000;
 
 bool	Distort = true;		// global -- true means to distort the texture
+bool	drawTexture = true;
 
 struct point {
 	float x, y, z;		// coordinates
@@ -301,8 +302,8 @@ MjbSphere(float radius, int slices, int stacks)
 			p->nz = z;
 			if (Distort)
 			{
-				p->s = ((lng + M_PI) / (2.*M_PI)) * cos(Time*M_PI);
-				p->t = ((lat + M_PI / 2.) / M_PI) * sin(Time*M_PI);
+				p->s = ((lng + M_PI) / (2.*M_PI)) / cos(Time*M_PI);
+				p->t = ((lat + M_PI / 2.) / M_PI) / sin(Time*M_PI);
 			}
 			else
 			{
@@ -564,15 +565,18 @@ Display( )
 
 
 	// draw the current object:
-
-	glEnable(GL_TEXTURE_2D);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, textWidth, textHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, Texture);
+	if (drawTexture == true) {
+		glEnable(GL_TEXTURE_2D);
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, textWidth, textHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, Texture);
+	}
 	glPushMatrix;
 	glRotatef(-92, 0, 1, 0);
 	MjbSphere(1.5, 100, 100);
 	//glCallList(sphereList);
 	glPopMatrix;
-	glDisable(GL_TEXTURE_2D);
+	if (drawTexture == true) {
+		glDisable(GL_TEXTURE_2D);
+	}
 
 	/*if( DepthFightingOn != 0 )
 	{
@@ -769,6 +773,19 @@ ElapsedSeconds( )
 	return (float)ms / 1000.f;
 }
 
+void DoTextureMenu(int id) {
+	if (id == 0) {
+		drawTexture = false;
+	}
+	else if (id == 1) {
+		drawTexture = true;
+		Distort = false;
+	}
+	else if (id == 2) {
+		Distort = true;
+	}
+}
+
 
 // initialize the glui window:
 
@@ -808,7 +825,13 @@ InitMenus( )
 	glutAddMenuEntry( "Orthographic",  ORTHO );
 	glutAddMenuEntry( "Perspective",   PERSP );
 
+	int textureMenu = glutCreateMenu(DoTextureMenu);
+	glutAddMenuEntry("No Texture", 0);
+	glutAddMenuEntry("Regular Texture", 1);
+	glutAddMenuEntry("Distort Texture", 2);
+
 	int mainmenu = glutCreateMenu( DoMainMenu );
+	glutAddSubMenu("Texture", textureMenu);
 	glutAddSubMenu(   "Axes",          axesmenu);
 	glutAddSubMenu(   "Colors",        colormenu);
 	glutAddSubMenu(   "Depth Buffer",  depthbuffermenu);
