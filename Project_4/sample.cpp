@@ -519,6 +519,8 @@ Display( )
 
 	glCallList(torusList);
 
+	glCallList(teapotList);
+
 	if( DepthFightingOn != 0 )
 	{
 		glPushMatrix( );
@@ -888,6 +890,20 @@ InitLists( )
 	glShadeModel(GL_SMOOTH);
 	SetMaterial(1., 1., 0., .5);
 	glutSolidTorus(.5, 1., 100, 100);
+	glPopMatrix();
+
+	glEndList();
+
+	teapotList = glGenLists(1);
+	glNewList(teapotList, GL_COMPILE);
+
+	glPushMatrix();
+	glTranslatef(1., 0., 2.);
+	glRotatef(90, 0., 1., 0.);
+	glShadeModel(GL_SMOOTH);
+	SetMaterial(0., 1., 0., 1.);
+	glutSolidTeapot(.3);
+	glPopMatrix();
 
 	glEndList();
 
