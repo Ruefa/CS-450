@@ -226,6 +226,9 @@ float light1_x = 2.;
 float light1_z = 2.;
 bool light1_direction = true;
 
+float teapot_z = 2.;
+bool teapot_dir = true;
+
 float * Array3(float a, float b, float c) {
 	static float array[4];
 
@@ -362,8 +365,23 @@ Animate( )
 		light1_x -= .05;
 		light1_z -= .05;
 
-		if (light1_x <= 2)
+		if (light1_x <= .25)
 			light1_direction = true;
+	}
+
+	if (teapot_dir) {
+		teapot_z -= .05;
+
+		if (teapot_z <= -1) {
+			teapot_dir = false;
+		}
+	}
+	else {
+		teapot_z += .05;
+
+		if (teapot_z >= 2) {
+			teapot_dir = true;
+		}
 	}
 
 	// force a call to Display( ) next time it is convenient:
@@ -519,7 +537,10 @@ Display( )
 
 	glCallList(torusList);
 
+	glPushMatrix();
+	glTranslatef(1., 0., teapot_z);
 	glCallList(teapotList);
+	glPopMatrix();
 
 	if( DepthFightingOn != 0 )
 	{
@@ -898,7 +919,6 @@ InitLists( )
 	glNewList(teapotList, GL_COMPILE);
 
 	glPushMatrix();
-	glTranslatef(1., 0., 2.);
 	glRotatef(90, 0., 1., 0.);
 	glShadeModel(GL_SMOOTH);
 	SetMaterial(0., 1., 0., 1.);
