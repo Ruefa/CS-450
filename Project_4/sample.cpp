@@ -215,6 +215,30 @@ void	Visibility( int );
 void	Axes( float );
 void	HsvRgb( float[3], float [3] );
 
+float White[] = { 1.,1.,1.,1. };
+
+float * Array3(float a, float b, float c) {
+	static float array[4];
+
+	array[0] = a;
+	array[1] = b;
+	array[2] = c;
+	array[3] = 1.;
+
+	return array;
+}
+
+float *
+MulArray3(float factor, float array0[3])
+{
+	static float array[4];
+	array[0] = factor * array0[0];
+	array[1] = factor * array0[1];
+	array[2] = factor * array0[2];
+	array[3] = 1.;
+	return array;
+}
+
 // main program:
 
 int
@@ -390,8 +414,34 @@ Display( )
 
 	glEnable( GL_NORMALIZE );
 
+	// do lighting stuff
+	glEnable(GL_LIGHTING);
+
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.3f, White));
+
+	glLightfv(GL_LIGHT0, GL_POSITION, Array3(0., 10., 0.));
+	glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, Array3(1., 1., 1.));
+	glLightfv(GL_LIGHT0, GL_SPECULAR, Array3(1., 1., 1.));
+
+	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
+	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.);
+
+	glEnable(GL_LIGHT0);
 
 	// draw the current object:
+
+	glMaterialfv(GL_BACK, GL_AMBIENT, MulArray3(.4, White));
+	glMaterialfv(GL_BACK, GL_DIFFUSE, MulArray3(1., White));
+	glMaterialfv(GL_BACK, GL_SPECULAR, Array3(0., 0., 0.));
+	glMaterialf(GL_BACK, GL_SHININESS, 5.);
+	glMaterialfv(GL_BACK, GL_EMISSION, Array3(0., 0., 0.));
+	glMaterialfv(GL_FRONT, GL_AMBIENT, MulArray3(1., White));
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, MulArray3(1., White));
+	glMaterialfv(GL_FRONT, GL_SPECULAR, MulArray3(.7, White));
+	glMaterialf(GL_FRONT, GL_SHININESS, 8.);
+	glMaterialfv(GL_FRONT, GL_EMISSION, Array3(0., 0., 0.));
 
 	glCallList( sphereList );
 
@@ -748,6 +798,8 @@ InitLists( )
 	sphereList = glGenLists( 1 );
 	glNewList( sphereList, GL_COMPILE );
 
+	glColor3f(0, 1., 1.);
+	glShadeModel(GL_FLAT);
 	glutSolidSphere(.5, 100, 100);
 
 	glEndList( );
