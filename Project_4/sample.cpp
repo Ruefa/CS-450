@@ -239,6 +239,49 @@ MulArray3(float factor, float array0[3])
 	return array;
 }
 
+void
+SetMaterial(float r, float g, float b, float shininess)
+{
+	glMaterialfv(GL_BACK, GL_EMISSION, Array3(0., 0., 0.));
+	glMaterialfv(GL_BACK, GL_AMBIENT, MulArray3(.4f, White));
+	glMaterialfv(GL_BACK, GL_DIFFUSE, MulArray3(1., White));
+	glMaterialfv(GL_BACK, GL_SPECULAR, Array3(0., 0., 0.));
+	glMaterialf(GL_BACK, GL_SHININESS, 2.f);
+	glMaterialfv(GL_FRONT, GL_EMISSION, Array3(0., 0., 0.));
+	glMaterialfv(GL_FRONT, GL_AMBIENT, Array3(r, g, b));
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, Array3(r, g, b));
+	glMaterialfv(GL_FRONT, GL_SPECULAR, MulArray3(.8f, White));
+	glMaterialf(GL_FRONT, GL_SHININESS, shininess);
+}
+
+void
+SetPointLight(int ilight, float x, float y, float z, float r, float g, float b)
+{
+	glLightfv(ilight, GL_POSITION, Array3(x, y, z));
+	glLightfv(ilight, GL_AMBIENT, Array3(0., 0., 0.));
+	glLightfv(ilight, GL_DIFFUSE, Array3(r, g, b));
+	glLightfv(ilight, GL_SPECULAR, Array3(r, g, b));
+	glLightf(ilight, GL_CONSTANT_ATTENUATION, 1.);
+	glLightf(ilight, GL_LINEAR_ATTENUATION, 0.);
+	glLightf(ilight, GL_QUADRATIC_ATTENUATION, 0.);
+	glEnable(ilight);
+}
+void
+SetSpotLight(int ilight, float x, float y, float z, float xdir, float ydir, float zdir, float r, float g, float b)
+{
+	glLightfv(ilight, GL_POSITION, Array3(x, y, z));
+	glLightfv(ilight, GL_SPOT_DIRECTION, Array3(xdir, ydir, zdir));
+	glLightf(ilight, GL_SPOT_EXPONENT, 1.);
+	glLightf(ilight, GL_SPOT_CUTOFF, 45.);
+	glLightfv(ilight, GL_AMBIENT, Array3(0., 0., 0.));
+	glLightfv(ilight, GL_DIFFUSE, Array3(r, g, b));
+	glLightfv(ilight, GL_SPECULAR, Array3(r, g, b));
+	glLightf(ilight, GL_CONSTANT_ATTENUATION, 1.);
+	glLightf(ilight, GL_LINEAR_ATTENUATION, 0.);
+	glLightf(ilight, GL_QUADRATIC_ATTENUATION, 0.);
+	glEnable(ilight);
+}
+
 // main program:
 
 int
@@ -417,7 +460,7 @@ Display( )
 	// do lighting stuff
 	glEnable(GL_LIGHTING);
 
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.3f, White));
+	/*glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.3f, White));
 
 	glLightfv(GL_LIGHT0, GL_POSITION, Array3(0., 10., 0.));
 	glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
@@ -428,11 +471,13 @@ Display( )
 	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
 	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.);
 
-	glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHT0);*/
+
+	SetPointLight(GL_LIGHT0, 0., 1., 0., 1., 1., 1.);
 
 	// draw the current object:
 
-	glMaterialfv(GL_BACK, GL_AMBIENT, MulArray3(.4, White));
+	/*glMaterialfv(GL_BACK, GL_AMBIENT, MulArray3(.4, White));
 	glMaterialfv(GL_BACK, GL_DIFFUSE, MulArray3(1., White));
 	glMaterialfv(GL_BACK, GL_SPECULAR, Array3(0., 0., 0.));
 	glMaterialf(GL_BACK, GL_SHININESS, 5.);
@@ -441,7 +486,9 @@ Display( )
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, MulArray3(1., White));
 	glMaterialfv(GL_FRONT, GL_SPECULAR, MulArray3(.7, White));
 	glMaterialf(GL_FRONT, GL_SHININESS, 8.);
-	glMaterialfv(GL_FRONT, GL_EMISSION, Array3(0., 0., 0.));
+	glMaterialfv(GL_FRONT, GL_EMISSION, Array3(0., 0., 0.));*/
+
+	
 
 	glCallList( sphereList );
 
@@ -800,6 +847,7 @@ InitLists( )
 
 	glColor3f(0, 1., 1.);
 	glShadeModel(GL_FLAT);
+	SetMaterial(0., 1., 1., 1.);
 	glutSolidSphere(.5, 100, 100);
 
 	glEndList( );
