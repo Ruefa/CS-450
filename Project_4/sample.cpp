@@ -219,6 +219,13 @@ void	HsvRgb( float[3], float [3] );
 
 float White[] = { 1.,1.,1.,1. };
 
+float Time;
+#define MS_PER_CYCLE 10000;
+
+float light1_x = 2.;
+float light1_z = 2.;
+bool light1_direction = true;
+
 float * Array3(float a, float b, float c) {
 	static float array[4];
 
@@ -340,8 +347,24 @@ main( int argc, char *argv[ ] )
 void
 Animate( )
 {
-	// put animation stuff in here -- change some global variables
-	// for Display( ) to find:
+	int ms = glutGet(GLUT_ELAPSED_TIME);
+	ms %= MS_PER_CYCLE;
+	Time = (float)ms / (float)MS_PER_CYCLE;
+
+	if (light1_direction) {
+		light1_x += .05;
+		light1_z += .05;
+
+		if (light1_x >= 4)
+			light1_direction = false;
+	}
+	else {
+		light1_x -= .05;
+		light1_z -= .05;
+
+		if (light1_x <= 2)
+			light1_direction = true;
+	}
 
 	// force a call to Display( ) next time it is convenient:
 
@@ -477,7 +500,7 @@ Display( )
 
 	SetPointLight(GL_LIGHT0, 0., 1., 0., 1., 1., 1.);
 
-	SetSpotLight(GL_LIGHT1, 2., 0., 2., -1., 0., -1., 1., 0., 0.);
+	SetSpotLight(GL_LIGHT1, light1_x, 0., light1_z, -1., 0., -1., 1., 0., 0.);
 
 	// draw the current object:
 
@@ -813,7 +836,7 @@ InitGraphics( )
 	glutTabletButtonFunc( NULL );
 	glutMenuStateFunc( NULL );
 	glutTimerFunc( -1, NULL, 0 );
-	glutIdleFunc( NULL );
+	glutIdleFunc( Animate );
 
 	// init glew (a window must be open to do this):
 
@@ -851,7 +874,7 @@ InitLists( )
 
 	glColor3f(0, 1., 1.);
 	glShadeModel(GL_FLAT);
-	SetMaterial(0., 1., 1., 1.);
+	SetMaterial(0., 1., 1., 5.);
 	glutSolidSphere(.5, 100, 100);
 
 	glEndList( );
@@ -863,7 +886,7 @@ InitLists( )
 	glTranslatef(2.5, 0., 0.);
 	glRotatef(90, 0., 1., 0.);
 	glShadeModel(GL_SMOOTH);
-	SetMaterial(1., 1., 0., 1.);
+	SetMaterial(1., 1., 0., .5);
 	glutSolidTorus(.5, 1., 100, 100);
 
 	glEndList();
