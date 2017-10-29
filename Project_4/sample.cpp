@@ -181,6 +181,7 @@ int		DepthFightingOn;		// != 0 means to use the z-buffer
 GLuint	sphereList;				// object display list
 GLuint	torusList;
 GLuint	teapotList;
+GLuint	lightSphereList;
 int		MainWindow;				// window id for main graphics window
 float	Scale;					// scaling factor
 int		WhichColor;				// index into Colors[ ]
@@ -228,6 +229,9 @@ bool light1_direction = true;
 
 float teapot_z = 2.;
 bool teapot_dir = true;
+
+int lightSwitch[3] = { 1, 1, 1 };
+int freeze = 0;
 
 float * Array3(float a, float b, float c) {
 	static float array[4];
@@ -354,33 +358,35 @@ Animate( )
 	ms %= MS_PER_CYCLE;
 	Time = (float)ms / (float)MS_PER_CYCLE;
 
-	if (light1_direction) {
-		light1_x += .05;
-		light1_z += .05;
+	if (!freeze) {
+		if (light1_direction) {
+			light1_x += .05;
+			light1_z += .05;
 
-		if (light1_x >= 4)
-			light1_direction = false;
-	}
-	else {
-		light1_x -= .05;
-		light1_z -= .05;
-
-		if (light1_x <= .25)
-			light1_direction = true;
-	}
-
-	if (teapot_dir) {
-		teapot_z -= .05;
-
-		if (teapot_z <= -1) {
-			teapot_dir = false;
+			if (light1_x >= 4)
+				light1_direction = false;
 		}
-	}
-	else {
-		teapot_z += .05;
+		else {
+			light1_x -= .05;
+			light1_z -= .05;
 
-		if (teapot_z >= 2) {
-			teapot_dir = true;
+			if (light1_x <= .25)
+				light1_direction = true;
+		}
+
+		if (teapot_dir) {
+			teapot_z -= .05;
+
+			if (teapot_z <= -1) {
+				teapot_dir = false;
+			}
+		}
+		else {
+			teapot_z += .05;
+
+			if (teapot_z >= 2) {
+				teapot_dir = true;
+			}
 		}
 	}
 
@@ -501,11 +507,42 @@ Display( )
 	glEnable( GL_NORMALIZE );
 
 	// do lighting stuff
+
+	glDisable(GL_LIGHTING);
 	glEnable(GL_LIGHTING);
 
 	SetPointLight(GL_LIGHT0, 0., 1., 0., 1., 1., 1.);
 
+	glPushMatrix();
+	glColor3f(1., 1., 1.);
+	glTranslatef(0., 1., 0.);
+	glCallList(lightSphereList);
+	glPopMatrix();
+
 	SetSpotLight(GL_LIGHT1, light1_x, 0., light1_z, -1., 0., -1., 1., 0., 0.);
+
+	glPushMatrix();
+	glColor3f(1., 0., 0.);
+	glTranslatef(light1_x, 0., light1_z);
+	glCallList(lightSphereList);
+	glPopMatrix();
+
+	SetPointLight(GL_LIGHT2, 5., 0., 0., 0., 0., 1.);
+
+	glPushMatrix();
+	glColor3f(0., 0., 1.);
+	glTranslatef(5., 0., 0.);
+	glCallList(lightSphereList);
+	glPopMatrix();
+
+	for (int i = 0; i < sizeof(lightSwitch) / sizeof(lightSwitch[0]); i++) {
+		if (lightSwitch[i]) {
+			glEnable(GL_LIGHT0 + i);
+		}
+		else {
+			glDisable(GL_LIGHT0 + i);
+		}
+	}
 
 	// draw the current object:
 
@@ -529,7 +566,6 @@ Display( )
 	// swap the double-buffered framebuffers:
 
 	glutSwapBuffers( );
-
 
 	// be sure the graphics buffer has been sent:
 	// note: be sure to use glFlush( ) here, not glFinish( ) !
@@ -809,6 +845,10 @@ InitGraphics( )
 	glutTimerFunc( -1, NULL, 0 );
 	glutIdleFunc( Animate );
 
+	/*for (int i = 0; i < sizeof(lightSwitch)/sizeof(lightSwitch[0]); i++) {
+		lightSwitch[i] = 1;
+	}*/
+
 	// init glew (a window must be open to do this):
 
 #ifdef WIN32
@@ -843,10 +883,12 @@ InitLists( )
 	sphereList = glGenLists( 1 );
 	glNewList( sphereList, GL_COMPILE );
 
+	glPushMatrix();
 	glColor3f(0, 1., 1.);
 	glShadeModel(GL_FLAT);
 	SetMaterial(0., 1., 1., 5.);
 	glutSolidSphere(.5, 100, 100);
+	glPopMatrix();
 
 	glEndList( );
 
@@ -872,6 +914,13 @@ InitLists( )
 	SetMaterial(0., 1., 0., 1.);
 	glutSolidTeapot(.3);
 	glPopMatrix();
+
+	glEndList();
+
+	lightSphereList = glGenLists(1);
+	glNewList(lightSphereList, GL_COMPILE);
+
+	glutSolidSphere(.05, 50, 50);
 
 	glEndList();
 
@@ -912,6 +961,20 @@ Keyboard( unsigned char c, int x, int y )
 		case ESCAPE:
 			DoMainMenu( QUIT );	// will not return here
 			break;				// happy compiler
+
+		case '0':
+			lightSwitch[0] = !lightSwitch[0];
+			break;
+		case '1':
+			lightSwitch[1] = !lightSwitch[1];
+			break;
+		case '2':
+			lightSwitch[2] = !lightSwitch[2];
+			break;
+
+		case 'f':
+			freeze = !freeze;
+			break;
 
 		default:
 			fprintf( stderr, "Don't know what to do with keyboard hit: '%c' (0x%0x)\n", c, c );

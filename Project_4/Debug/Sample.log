@@ -1,1 +1,10 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Platforms\Win32\PlatformToolsets\v141\Toolset.targets(34,5): error MSB8036: The Windows SDK version 10.0.14393.0 was not found. Install the required version of Windows SDK or change the SDK version in the project property pages or by right-clicking the solution and selecting "Retarget solution".
+﻿  sample.cpp
+c:\src\cs-450\project_4\sample.cpp(363): warning C4305: '+=': truncation from 'double' to 'float'
+c:\src\cs-450\project_4\sample.cpp(364): warning C4305: '+=': truncation from 'double' to 'float'
+c:\src\cs-450\project_4\sample.cpp(370): warning C4305: '-=': truncation from 'double' to 'float'
+c:\src\cs-450\project_4\sample.cpp(371): warning C4305: '-=': truncation from 'double' to 'float'
+c:\src\cs-450\project_4\sample.cpp(378): warning C4305: '-=': truncation from 'double' to 'float'
+c:\src\cs-450\project_4\sample.cpp(385): warning C4305: '+=': truncation from 'double' to 'float'
+c:\src\cs-450\project_4\sample.cpp(1285): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+sample.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
+  Sample.vcxproj -> C:\src\CS-450\Project_4\.\Debug\Sample.exe
