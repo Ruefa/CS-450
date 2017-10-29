@@ -178,7 +178,7 @@ int		DebugOn;				// != 0 means to print debugging info
 int		DepthCueOn;				// != 0 means to use intensity depth cueing
 int		DepthBufferOn;			// != 0 means to use the z-buffer
 int		DepthFightingOn;		// != 0 means to use the z-buffer
-GLuint	BoxList;				// object display list
+GLuint	sphereList;				// object display list
 int		MainWindow;				// window id for main graphics window
 float	Scale;					// scaling factor
 int		WhichColor;				// index into Colors[ ]
@@ -393,13 +393,13 @@ Display( )
 
 	// draw the current object:
 
-	glCallList( BoxList );
+	glCallList( sphereList );
 
 	if( DepthFightingOn != 0 )
 	{
 		glPushMatrix( );
 			glRotatef( 90.,   0., 1., 0. );
-			glCallList( BoxList );
+			glCallList( sphereList );
 		glPopMatrix( );
 	}
 
@@ -745,8 +745,8 @@ InitLists( )
 
 	// create the object:
 
-	BoxList = glGenLists( 1 );
-	glNewList( BoxList, GL_COMPILE );
+	sphereList = glGenLists( 1 );
+	glNewList( sphereList, GL_COMPILE );
 
 	glutSolidSphere(.5, 100, 100);
 
