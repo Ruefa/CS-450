@@ -179,6 +179,8 @@ int		DepthCueOn;				// != 0 means to use intensity depth cueing
 int		DepthBufferOn;			// != 0 means to use the z-buffer
 int		DepthFightingOn;		// != 0 means to use the z-buffer
 GLuint	sphereList;				// object display list
+GLuint	torusList;
+GLuint	teapotList;
 int		MainWindow;				// window id for main graphics window
 float	Scale;					// scaling factor
 int		WhichColor;				// index into Colors[ ]
@@ -475,6 +477,8 @@ Display( )
 
 	SetPointLight(GL_LIGHT0, 0., 1., 0., 1., 1., 1.);
 
+	SetSpotLight(GL_LIGHT1, 2., 0., 2., -1., 0., -1., 1., 0., 0.);
+
 	// draw the current object:
 
 	/*glMaterialfv(GL_BACK, GL_AMBIENT, MulArray3(.4, White));
@@ -488,9 +492,9 @@ Display( )
 	glMaterialf(GL_FRONT, GL_SHININESS, 8.);
 	glMaterialfv(GL_FRONT, GL_EMISSION, Array3(0., 0., 0.));*/
 
-	
-
 	glCallList( sphereList );
+
+	glCallList(torusList);
 
 	if( DepthFightingOn != 0 )
 	{
@@ -851,6 +855,18 @@ InitLists( )
 	glutSolidSphere(.5, 100, 100);
 
 	glEndList( );
+
+	torusList = glGenLists(1);
+	glNewList(torusList, GL_COMPILE);
+
+	glPushMatrix();
+	glTranslatef(2.5, 0., 0.);
+	glRotatef(90, 0., 1., 0.);
+	glShadeModel(GL_SMOOTH);
+	SetMaterial(1., 1., 0., 1.);
+	glutSolidTorus(.5, 1., 100, 100);
+
+	glEndList();
 
 
 	// create the axes:
