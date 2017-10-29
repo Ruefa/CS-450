@@ -503,35 +503,11 @@ Display( )
 	// do lighting stuff
 	glEnable(GL_LIGHTING);
 
-	/*glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.3f, White));
-
-	glLightfv(GL_LIGHT0, GL_POSITION, Array3(0., 10., 0.));
-	glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, Array3(1., 1., 1.));
-	glLightfv(GL_LIGHT0, GL_SPECULAR, Array3(1., 1., 1.));
-
-	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
-	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
-	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.);
-
-	glEnable(GL_LIGHT0);*/
-
 	SetPointLight(GL_LIGHT0, 0., 1., 0., 1., 1., 1.);
 
 	SetSpotLight(GL_LIGHT1, light1_x, 0., light1_z, -1., 0., -1., 1., 0., 0.);
 
 	// draw the current object:
-
-	/*glMaterialfv(GL_BACK, GL_AMBIENT, MulArray3(.4, White));
-	glMaterialfv(GL_BACK, GL_DIFFUSE, MulArray3(1., White));
-	glMaterialfv(GL_BACK, GL_SPECULAR, Array3(0., 0., 0.));
-	glMaterialf(GL_BACK, GL_SHININESS, 5.);
-	glMaterialfv(GL_BACK, GL_EMISSION, Array3(0., 0., 0.));
-	glMaterialfv(GL_FRONT, GL_AMBIENT, MulArray3(1., White));
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, MulArray3(1., White));
-	glMaterialfv(GL_FRONT, GL_SPECULAR, MulArray3(.7, White));
-	glMaterialf(GL_FRONT, GL_SHININESS, 8.);
-	glMaterialfv(GL_FRONT, GL_EMISSION, Array3(0., 0., 0.));*/
 
 	glCallList( sphereList );
 
@@ -549,34 +525,6 @@ Display( )
 			glCallList( sphereList );
 		glPopMatrix( );
 	}
-
-
-	// draw some gratuitous text that just rotates on top of the scene:
-
-	/*glDisable( GL_DEPTH_TEST );
-	glColor3f( 0., 1., 1. );
-	DoRasterString( 0., 1., 0., "Text That Moves" );*/
-
-
-	// draw some gratuitous text that is fixed on the screen:
-	//
-	// the projection matrix is reset to define a scene whose
-	// world coordinate system goes from 0-100 in each axis
-	//
-	// this is called "percent units", and is just a convenience
-	//
-	// the modelview matrix is reset to identity as we don't
-	// want to transform these coordinates
-
-	/*glDisable( GL_DEPTH_TEST );
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity( );
-	gluOrtho2D( 0., 100.,     0., 100. );
-	glMatrixMode( GL_MODELVIEW );
-	glLoadIdentity( );
-	glColor3f( 1., 1., 1. );
-	DoRasterString( 5., 5., 0., "Text That Doesn't" );*/
-
 
 	// swap the double-buffered framebuffers:
 
