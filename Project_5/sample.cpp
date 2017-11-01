@@ -223,6 +223,8 @@ GLSLProgram *Pattern;
 #define MS_PER_CYCLE 10000
 float Time;
 
+GLuint teapotList;
+
 // main program:
 
 int
@@ -402,7 +404,8 @@ Display( )
 
 	// draw the current object:
 
-	glCallList( BoxList );
+	//glCallList( BoxList );
+	glCallList(teapotList);
 
 	// swap the double-buffered framebuffers:
 
@@ -702,15 +705,14 @@ InitGraphics( )
 
 	//Shader stuff
 
-	Pattern = new GLSLProgram();
+	/*Pattern = new GLSLProgram();
 	bool valid = Pattern->Create("pattern.vert", "pattern.frag");
 	if (!valid) {
 		fprintf(stderr, "Shader cannot be created!\n");
 		DoMainMenu(QUIT);
 	}
 	fprintf(stderr, "Shader created.\n");
-	Pattern->SetVerbose(false);
-
+	Pattern->SetVerbose(false);*/
 }
 
 
@@ -780,6 +782,14 @@ InitLists( )
 		glEnd( );
 
 	glEndList( );
+
+	teapotList = glGenLists(1);
+	glNewList(teapotList, GL_COMPILE);
+
+	glColor3f(0., 1., 1.);
+	glutSolidTeapot(1.);
+
+	glEndList();
 
 
 	// create the axes:
