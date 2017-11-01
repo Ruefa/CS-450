@@ -219,6 +219,8 @@ void	HsvRgb( float[3], float [3] );
 // project 5 globals
 
 GLSLProgram *Pattern;
+
+#define MS_PER_CYCLE 10000
 float Time;
 
 // main program:
@@ -277,8 +279,9 @@ main( int argc, char *argv[ ] )
 void
 Animate( )
 {
-	// put animation stuff in here -- change some global variables
-	// for Display( ) to find:
+	int ms = glutGet(GLUT_ELAPSED_TIME);
+	ms %= MS_PER_CYCLE;
+	Time = (float)ms / (float)MS_PER_CYCLE;		// [0.,1.)
 
 	// force a call to Display( ) next time it is convenient:
 
@@ -682,7 +685,7 @@ InitGraphics( )
 	glutTabletButtonFunc( NULL );
 	glutMenuStateFunc( NULL );
 	glutTimerFunc( -1, NULL, 0 );
-	glutIdleFunc( NULL );
+	glutIdleFunc( Animate );
 
 	// init glew (a window must be open to do this):
 
@@ -696,6 +699,17 @@ InitGraphics( )
 		fprintf( stderr, "GLEW initialized OK\n" );
 	fprintf( stderr, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 #endif
+
+	//Shader stuff
+
+	Pattern = new GLSLProgram();
+	bool valid = Pattern->Create("pattern.vert", "pattern.frag");
+	if (!valid) {
+		fprintf(stderr, "Shader cannot be created!\n");
+		DoMainMenu(QUIT);
+	}
+	fprintf(stderr, "Shader created.\n");
+	Pattern->SetVerbose(false);
 
 }
 
