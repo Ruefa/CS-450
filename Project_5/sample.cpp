@@ -705,14 +705,14 @@ InitGraphics( )
 
 	//Shader stuff
 
-	/*Pattern = new GLSLProgram();
+	Pattern = new GLSLProgram();
 	bool valid = Pattern->Create("pattern.vert", "pattern.frag");
 	if (!valid) {
 		fprintf(stderr, "Shader cannot be created!\n");
 		DoMainMenu(QUIT);
 	}
 	fprintf(stderr, "Shader created.\n");
-	Pattern->SetVerbose(false);*/
+	Pattern->SetVerbose(false);
 }
 
 
