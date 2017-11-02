@@ -220,10 +220,13 @@ void	HsvRgb( float[3], float [3] );
 
 GLSLProgram *Pattern;
 
-#define MS_PER_CYCLE 10000
+#define MS_PER_CYCLE 1000
 float Time;
 
 GLuint teapotList;
+
+bool vertShader = true;
+bool fragShader = false;
 
 // main program:
 
@@ -405,7 +408,12 @@ Display( )
 	// draw the current object:
 
 	//glCallList( BoxList );
+	Pattern->Use();
+	Pattern->SetUniformVariable("uTime", Time);
+	Pattern->SetUniformVariable("uvertShader", vertShader);
+	Pattern->SetUniformVariable("ufragShader", fragShader);
 	glCallList(teapotList);
+	Pattern->Use(0);
 
 	// swap the double-buffered framebuffers:
 
