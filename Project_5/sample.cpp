@@ -226,7 +226,7 @@ float Time;
 GLuint teapotList;
 
 bool vertShader = true;
-bool fragShader = false;
+bool fragShader = true;
 
 // main program:
 
