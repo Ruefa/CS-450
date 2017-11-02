@@ -18,5 +18,16 @@
     <ClCompile Include="sample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="glslprogram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="pattern.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="pattern.frag">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
