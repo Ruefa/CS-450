@@ -19,9 +19,8 @@ main( )
 			vert.y += uTime;
 			vert.z += cos(uTime*2*PI);
 		}*/
+		//if(vert.x == uTime)
 		vert.z += cos(uTime*2*PI)*.25*cos(vert.x*PI*4);
-		/*vert.y = ??? something fun of your own design
-		vert.z = ??? something fun of your own design*/
 	}
 	gl_Position = gl_ModelViewProjectionMatrix * vec4( vert, 1. );
 }
