@@ -14,10 +14,12 @@ main( )
 	vST = gl_MultiTexCoord0.st;
 	vec3 vert = gl_Vertex.xyz;
 	if(uvertShader){
-		if(vert.x > .5)
+		/*if(vert.x > .95){
 			vert.x += uTime;
-		else
-			vert.x -= uTime;
+			vert.y += uTime;
+			vert.z += cos(uTime*2*PI);
+		}*/
+		vert.z += cos(uTime*2*PI)*.25*cos(vert.x*PI*4);
 		/*vert.y = ??? something fun of your own design
 		vert.z = ??? something fun of your own design*/
 	}
