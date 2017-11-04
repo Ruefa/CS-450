@@ -14,12 +14,6 @@ main( )
 	vST = gl_MultiTexCoord0.st;
 	vec3 vert = gl_Vertex.xyz;
 	if(uvertShader){
-		/*if(vert.x > .95){
-			vert.x += uTime;
-			vert.y += uTime;
-			vert.z += cos(uTime*2*PI);
-		}*/
-		//if(vert.x == uTime)
 		vert.z += cos(uTime*2*PI)*.25*cos(vert.x*PI*4);
 	}
 	gl_Position = gl_ModelViewProjectionMatrix * vec4( vert, 1. );
