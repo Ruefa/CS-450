@@ -227,6 +227,7 @@ GLuint teapotList;
 
 bool vertShader = true;
 bool fragShader = true;
+bool doAnimate = true;
 
 // main program:
 
@@ -836,6 +837,41 @@ Keyboard( unsigned char c, int x, int y )
 		case ESCAPE:
 			DoMainMenu( QUIT );	// will not return here
 			break;				// happy compiler
+
+		//Show both patterns
+		case 'B':
+			vertShader = true;
+			fragShader = true;
+			break;
+
+		//show no patterns
+		case 'N':
+			vertShader = false;
+			fragShader = false;
+			break;
+
+		//show only frag shader
+		case 'F':
+			fragShader = true;
+			vertShader = false;
+			break;
+
+		//show only vert shader
+		case 'V':
+			vertShader = true;
+			fragShader = false;
+			break;
+
+		//freeze or unfreeze animation
+		case 'f':
+			if (doAnimate) {
+				glutIdleFunc(NULL);
+			}
+			else {
+				glutIdleFunc(Animate);
+			}
+			doAnimate = !doAnimate;
+			break;
 
 		default:
 			fprintf( stderr, "Don't know what to do with keyboard hit: '%c' (0x%0x)\n", c, c );
