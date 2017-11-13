@@ -1,2 +1,2 @@
 line same for both
-mergeTest line
+master line
