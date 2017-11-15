@@ -222,11 +222,42 @@ float Time;
 
 struct Point {
 	float x, y, z;
-};
+}low1, low2;
 
 struct curve {
-	Point p0, p1, p2, p3;
+	Point p[4];
 } curves[5];
+
+void initPoints() {
+	curves[0].p[0].x = -1.;
+	curves[0].p[0].y = 0.5;
+	curves[0].p[0].z = 1.;
+
+	curves[0].p[1].x = 0;
+	curves[0].p[1].y = 2.;
+	curves[0].p[1].z = 1.;
+
+	curves[0].p[2].x = 1.0;
+	curves[0].p[2].y = 2.;
+	curves[0].p[2].z = 1.;
+
+	curves[0].p[3].x = 2.;
+	curves[0].p[3].y = 0.5;
+	curves[0].p[3].z = 1.;
+
+	low1.y = -2.;
+	low2.y = -2.;
+}
+
+
+void animateTest() {
+	curves[0].p[1].y = sin(Time  * 3.1415) * 4 - 2;
+	curves[0].p[2].y = sin(Time  * 3.1415) * 4 - 2;
+	float num = sin(Time  * 3.1415) * 4 - 2;
+	if (num >= 1.8 || num <= -1.8) {
+		printf("%f\n", num);
+	}
+}
 
 // main program:
 
@@ -406,21 +437,7 @@ Display( )
 
 	// draw the current object:
 
-	curves[0].p0.x = 0.;
-	curves[0].p0.y = 0.5;
-	curves[0].p0.z = 1.;
-
-	curves[0].p1.x = 1.;
-	curves[0].p1.y = 2.;
-	curves[0].p1.z = 1.;
-
-	curves[0].p2.x = 2.;
-	curves[0].p2.y = 2.;
-	curves[0].p2.z = 1.;
-
-	curves[0].p3.x = 3.;
-	curves[0].p3.y = 1.;
-	curves[0].p3.z = 1.;
+	animateTest();
 
 	glLineWidth(3.);
 	glColor3f(0., 1., 0.);
@@ -431,9 +448,9 @@ Display( )
 		{
 			float t = (float)it / (float)NUMPOINTS;
 				float omt = 1.f - t;
-				float x = omt*omt*omt*curves[i].p0.x + 3.f*t*omt*omt*curves[i].p1.x + 3.f*t*t*omt*curves[i].p2.x + t*t*t*curves[i].p3.x;
-				float y = omt*omt*omt*curves[i].p0.y + 3.f*t*omt*omt*curves[i].p1.y + 3.f*t*t*omt*curves[i].p2.y + t*t*t*curves[i].p3.y;
-				float z = omt*omt*omt*curves[i].p0.z + 3.f*t*omt*omt*curves[i].p1.z + 3.f*t*t*omt*curves[i].p2.z + t*t*t*curves[i].p3.z;
+				float x = omt*omt*omt*curves[i].p[0].x + 3.f*t*omt*omt*curves[i].p[1].x + 3.f*t*t*omt*curves[i].p[2].x + t*t*t*curves[i].p[3].x;
+				float y = omt*omt*omt*curves[i].p[0].y + 3.f*t*omt*omt*curves[i].p[1].y + 3.f*t*t*omt*curves[i].p[2].y + t*t*t*curves[i].p[3].y;
+				float z = omt*omt*omt*curves[i].p[0].z + 3.f*t*omt*omt*curves[i].p[1].z + 3.f*t*t*omt*curves[i].p[2].z + t*t*t*curves[i].p[3].z;
 				glVertex3f(x, y, z);
 		}
 	}
@@ -722,6 +739,8 @@ InitGraphics( )
 	glutMenuStateFunc( NULL );
 	glutTimerFunc( -1, NULL, 0 );
 	glutIdleFunc( Animate );
+
+	initPoints();
 
 	// init glew (a window must be open to do this):
 
