@@ -215,6 +215,9 @@ void	Visibility( int );
 void	Axes( float );
 void	HsvRgb( float[3], float [3] );
 
+#define MS_PER_CYCLE 1000
+float Time;
+
 // main program:
 
 int
@@ -271,8 +274,9 @@ main( int argc, char *argv[ ] )
 void
 Animate( )
 {
-	// put animation stuff in here -- change some global variables
-	// for Display( ) to find:
+	int ms = glutGet(GLUT_ELAPSED_TIME);
+	ms %= MS_PER_CYCLE;
+	Time = (float)ms / (float)MS_PER_CYCLE;
 
 	// force a call to Display( ) next time it is convenient:
 
@@ -712,7 +716,7 @@ InitGraphics( )
 	glutTabletButtonFunc( NULL );
 	glutMenuStateFunc( NULL );
 	glutTimerFunc( -1, NULL, 0 );
-	glutIdleFunc( NULL );
+	glutIdleFunc( Animate );
 
 	// init glew (a window must be open to do this):
 
