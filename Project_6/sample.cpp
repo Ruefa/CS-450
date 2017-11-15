@@ -218,6 +218,16 @@ void	HsvRgb( float[3], float [3] );
 #define MS_PER_CYCLE 1000
 float Time;
 
+#define NUMPOINTS 100
+
+struct Point {
+	float x, y, z;
+};
+
+struct curve {
+	Point p0, p1, p2, p3;
+};
+
 // main program:
 
 int
@@ -397,43 +407,37 @@ Display( )
 
 	// draw the current object:
 
-	glCallList( BoxList );
+	Point p0, p1, p2, p3;
+	p0.x = 0.;
+	p0.y = 0.5;
+	p0.z = 1.;
 
-	if( DepthFightingOn != 0 )
+	p1.x = 1.;
+	p1.y = 2.;
+	p1.z = 1.;
+
+	p2.x = 2.;
+	p2.y = 2.;
+	p2.z = 1.;
+
+	p3.x = 3.;
+	p3.y = 1.;
+	p3.z = 1.;
+
+	glLineWidth(3.);
+	glColor3f(0., 1., 0.);
+	glBegin(GL_LINE_STRIP);
+	for (int it = 0; it <= NUMPOINTS; it++)
 	{
-		glPushMatrix( );
-			glRotatef( 90.,   0., 1., 0. );
-			glCallList( BoxList );
-		glPopMatrix( );
+		float t = (float)it / (float)NUMPOINTS;
+		float omt = 1.f - t;
+		float x = omt*omt*omt*p0.x + 3.f*t*omt*omt*p1.x + 3.f*t*t*omt*p2.x + t*t*t*p3.x;
+		float y = omt*omt*omt*p0.y + 3.f*t*omt*omt*p1.y + 3.f*t*t*omt*p2.y + t*t*t*p3.y;
+		float z = omt*omt*omt*p0.z + 3.f*t*omt*omt*p1.z + 3.f*t*t*omt*p2.z + t*t*t*p3.z;
+		glVertex3f(x, y, z);
 	}
-
-
-	// draw some gratuitous text that just rotates on top of the scene:
-
-	glDisable( GL_DEPTH_TEST );
-	glColor3f( 0., 1., 1. );
-	DoRasterString( 0., 1., 0., "Text That Moves" );
-
-
-	// draw some gratuitous text that is fixed on the screen:
-	//
-	// the projection matrix is reset to define a scene whose
-	// world coordinate system goes from 0-100 in each axis
-	//
-	// this is called "percent units", and is just a convenience
-	//
-	// the modelview matrix is reset to identity as we don't
-	// want to transform these coordinates
-
-	glDisable( GL_DEPTH_TEST );
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity( );
-	gluOrtho2D( 0., 100.,     0., 100. );
-	glMatrixMode( GL_MODELVIEW );
-	glLoadIdentity( );
-	glColor3f( 1., 1., 1. );
-	DoRasterString( 5., 5., 0., "Text That Doesn't" );
-
+	glEnd();
+	glLineWidth(1.);
 
 	// swap the double-buffered framebuffers:
 
