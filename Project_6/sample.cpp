@@ -226,7 +226,7 @@ struct Point {
 
 struct curve {
 	Point p0, p1, p2, p3;
-};
+} curves[5];
 
 // main program:
 
@@ -238,7 +238,6 @@ main( int argc, char *argv[ ] )
 	// pull some command line arguments out)
 
 	glutInit( &argc, argv );
-
 
 	// setup all the graphics stuff:
 
@@ -407,34 +406,36 @@ Display( )
 
 	// draw the current object:
 
-	Point p0, p1, p2, p3;
-	p0.x = 0.;
-	p0.y = 0.5;
-	p0.z = 1.;
+	curves[0].p0.x = 0.;
+	curves[0].p0.y = 0.5;
+	curves[0].p0.z = 1.;
 
-	p1.x = 1.;
-	p1.y = 2.;
-	p1.z = 1.;
+	curves[0].p1.x = 1.;
+	curves[0].p1.y = 2.;
+	curves[0].p1.z = 1.;
 
-	p2.x = 2.;
-	p2.y = 2.;
-	p2.z = 1.;
+	curves[0].p2.x = 2.;
+	curves[0].p2.y = 2.;
+	curves[0].p2.z = 1.;
 
-	p3.x = 3.;
-	p3.y = 1.;
-	p3.z = 1.;
+	curves[0].p3.x = 3.;
+	curves[0].p3.y = 1.;
+	curves[0].p3.z = 1.;
 
 	glLineWidth(3.);
 	glColor3f(0., 1., 0.);
 	glBegin(GL_LINE_STRIP);
-	for (int it = 0; it <= NUMPOINTS; it++)
-	{
-		float t = (float)it / (float)NUMPOINTS;
-		float omt = 1.f - t;
-		float x = omt*omt*omt*p0.x + 3.f*t*omt*omt*p1.x + 3.f*t*t*omt*p2.x + t*t*t*p3.x;
-		float y = omt*omt*omt*p0.y + 3.f*t*omt*omt*p1.y + 3.f*t*t*omt*p2.y + t*t*t*p3.y;
-		float z = omt*omt*omt*p0.z + 3.f*t*omt*omt*p1.z + 3.f*t*t*omt*p2.z + t*t*t*p3.z;
-		glVertex3f(x, y, z);
+	//sizeof(curves) / sizeof(curves[0])
+	for (int i = 0; i < 1; i++) {
+		for (int it = 0; it <= NUMPOINTS; it++)
+		{
+			float t = (float)it / (float)NUMPOINTS;
+				float omt = 1.f - t;
+				float x = omt*omt*omt*curves[i].p0.x + 3.f*t*omt*omt*curves[i].p1.x + 3.f*t*t*omt*curves[i].p2.x + t*t*t*curves[i].p3.x;
+				float y = omt*omt*omt*curves[i].p0.y + 3.f*t*omt*omt*curves[i].p1.y + 3.f*t*t*omt*curves[i].p2.y + t*t*t*curves[i].p3.y;
+				float z = omt*omt*omt*curves[i].p0.z + 3.f*t*omt*omt*curves[i].p1.z + 3.f*t*t*omt*curves[i].p2.z + t*t*t*curves[i].p3.z;
+				glVertex3f(x, y, z);
+		}
 	}
 	glEnd();
 	glLineWidth(1.);
