@@ -215,7 +215,7 @@ void	Visibility( int );
 void	Axes( float );
 void	HsvRgb( float[3], float [3] );
 
-#define MS_PER_CYCLE 1000
+#define MS_PER_CYCLE 2000
 float Time;
 boolean doAnimate = false;
 
@@ -271,7 +271,7 @@ struct curve makeCurve(float x0, float y0, float z0, float x1, float y1, float z
 
 void initPoints() {
 	//mouth
-	curves[0] = makeCurve(0.75, .6, 1.9, .916, .3, 1.9, 1.082, .3, 1.9, 1.25, .6, 1.9);
+	curves[0] = makeCurve(0.75, .7, 1.9, .916, .4, 1.9, 1.082, .4, 1.9, 1.25, .7, 1.9);
 
 	//left ear
 	curves[1] = makeCurve(.25, 1.25, 1., 0., 1.2, .5, 0., .8, .5, .25, .75, 1.);
@@ -291,14 +291,18 @@ void initPoints() {
 
 
 void animateTest() {
-	curves[0].p[1].y = sin(Time  * M_PI) * (curves[0].p[1].y0*2) + curves[0].p[1].y0;
-	curves[0].p[2].y = sin(Time  * M_PI) * (curves[0].p[2].y0 * 2) + curves[0].p[2].y0;
+	float timeMult = sin(Time *  M_PI);
 
-	curves[1].p[1].z = sin(Time * M_PI) * (curves[1].p[1].z0 * 2) + curves[1].p[1].z0;
-	curves[1].p[2].z = sin(Time * M_PI) * (curves[1].p[2].z0 * 2) + curves[1].p[2].z0;
+	curves[0].p[1].y = timeMult * (curves[0].p[1].y0*1.5) + curves[0].p[1].y0;
+	curves[0].p[2].y = timeMult * (curves[0].p[2].y0 * 1.5) + curves[0].p[2].y0;
 
-	curves[2].p[1].z = sin(Time * M_PI) * (curves[2].p[1].z0 * 2) + curves[2].p[1].z0;
-	curves[2].p[2].z = sin(Time * M_PI) * (curves[2].p[2].z0 * 2) + curves[2].p[2].z0;
+	curves[1].p[1].z = timeMult * (curves[1].p[1].z0 * 2) + curves[1].p[1].z0;
+	curves[1].p[2].z = timeMult * (curves[1].p[2].z0 * 2) + curves[1].p[2].z0;
+
+	curves[2].p[1].z = timeMult * (curves[2].p[1].z0 * 2) + curves[2].p[1].z0;
+	curves[2].p[2].z = timeMult * (curves[2].p[2].z0 * 2) + curves[2].p[2].z0;
+
+	curves[5].p[0].y = timeMult * (1.35 - curves[5].p[0].y0) + curves[5].p[0].y0;
 }
 
 // main program:
