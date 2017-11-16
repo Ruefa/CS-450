@@ -233,7 +233,7 @@ struct Point {
 
 struct curve {
 	Point p[4];
-} curves[5];
+} curves[7];
 
 struct curve makeCurve(float x0, float y0, float z0, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3) {
 	struct curve newCurve;
@@ -270,13 +270,23 @@ struct curve makeCurve(float x0, float y0, float z0, float x1, float y1, float z
 }
 
 void initPoints() {
+	//mouth
 	curves[0] = makeCurve(0.75, .6, 1.9, .916, .3, 1.9, 1.082, .3, 1.9, 1.25, .6, 1.9);
 
+	//left ear
 	curves[1] = makeCurve(.25, 1.25, 1., 0., 1.2, .5, 0., .8, .5, .25, .75, 1.);
 
+	//right ear
 	curves[2] = makeCurve(1.75, 1.25, 1., 2., 1.2, .5, 2., .8, .5, 1.75, .75, 1.);
 
+	//left & right eye
 	curves[3] = makeCurve(.6, 1.15, 1.9, .683, 1.25, 1.9, .766, 1.25, 1.9, .85, 1.15, 1.9);
+	curves[4] = curves[3];
+	for(int i=0; i<4; i++)
+		curves[4].p[i].x += .5;
+
+	//left eye brow
+
 }
 
 
@@ -478,7 +488,7 @@ Display( )
 	glLineWidth(3.);
 	glColor3f(0., 1., 0.);
 	//sizeof(curves) / sizeof(curves[0])
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 5; i++) {
 		glBegin(GL_LINE_STRIP);
 		for (int it = 0; it <= NUMPOINTS; it++)
 		{
@@ -494,7 +504,7 @@ Display( )
 	glLineWidth(1.);
 
 	glColor3f(.7, .7, .7);
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 5; i++) {
 		if (showLines) {
 			glBegin(GL_LINE_STRIP);
 			for (int it = 0; it < sizeof(curves[0].p) / sizeof(curves[0].p[0]); it++) {
@@ -513,8 +523,15 @@ Display( )
 		}
 	}
 
+	//draw eye 1
 	glPushMatrix();
 	glTranslatef(.74, 1.15, 1.9);
+	glCallList(BoxList);
+	glPopMatrix();
+
+	//draw eye 2
+	glPushMatrix();
+	glTranslatef(1.24, 1.15, 1.9);
 	glCallList(BoxList);
 	glPopMatrix();
 
