@@ -1,1 +1,19 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Platforms\Win32\PlatformToolsets\v141\Toolset.targets(34,5): error MSB8036: The Windows SDK version 10.0.14393.0 was not found. Install the required version of Windows SDK or change the SDK version in the project property pages or by right-clicking the solution and selecting "Retarget solution".
+﻿  sample.cpp
+c:\src\cs-450\project_6\sample.cpp(274): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\src\cs-450\project_6\sample.cpp(277): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\src\cs-450\project_6\sample.cpp(280): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\src\cs-450\project_6\sample.cpp(283): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\src\cs-450\project_6\sample.cpp(289): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\src\cs-450\project_6\sample.cpp(292): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\src\cs-450\project_6\sample.cpp(297): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\project_6\sample.cpp(299): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\project_6\sample.cpp(300): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\project_6\sample.cpp(308): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\project_6\sample.cpp(309): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\project_6\sample.cpp(501): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+c:\src\cs-450\project_6\sample.cpp(516): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+c:\src\cs-450\project_6\sample.cpp(540): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+c:\src\cs-450\project_6\sample.cpp(548): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+c:\src\cs-450\project_6\sample.cpp(1240): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+sample.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
+  Sample.vcxproj -> C:\src\CS-450\Project_6\.\Debug\Sample.exe
