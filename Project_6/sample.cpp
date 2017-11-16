@@ -224,6 +224,8 @@ boolean doAnimate = false;
 boolean showPoints = true;
 boolean showLines = true;
 
+GLuint headList;
+
 struct Point {
 	float x0, y0, z0;
 	float x, y, z;
@@ -268,22 +270,13 @@ struct curve makeCurve(float x0, float y0, float z0, float x1, float y1, float z
 }
 
 void initPoints() {
-	curves[0] = makeCurve(0, 0.5, .5, .25, 1, .5, .5, 0, .5, .75, .5, .5);
-
-	low1.y = -2.;
-	low2.y = -2.;
-
-	low1.x = -1.;
-	low2.x = 0.;
+	curves[0] = makeCurve(0.75, .6, 1.9, .916, .3, 1.9, 1.082, .3, 1.9, 1.25, .6, 1.9);
 }
 
 
 void animateTest() {
-	curves[0].p[1].y = sin(Time  * 3.1415) * (curves[0].p[1].y0 - low1.y) - 2;
-	curves[0].p[2].y = sin(Time  * 3.1415) * (curves[0].p[2].y0 - low1.y) - 2;
-	
-	curves[0].p[1].z = sin(Time  * 3.1415) - 1;
-	curves[0].p[2].z = sin(Time  * 3.1415);
+	curves[0].p[1].y = sin(Time  * 3.1415) * .6 +.3;
+	curves[0].p[2].y = sin(Time  * 3.1415) * .6 + .3;
 }
 
 // main program:
@@ -467,6 +460,8 @@ Display( )
 	if (doAnimate) {
 		animateTest();
 	}
+
+	glCallList(headList);
 
 	glLineWidth(3.);
 	glColor3f(0., 1., 0.);
@@ -828,6 +823,14 @@ InitLists( )
 			glutSolidCube(.05);
 
 	glEndList( );
+
+	headList = glGenLists(1);
+	glNewList(headList, GL_COMPILE);
+	glPushMatrix();
+	glTranslatef(1, 1, 1);
+	glutSolidSphere(0.75, 100, 100);
+	glPopMatrix();
+	glEndList();
 
 
 	// create the axes:
