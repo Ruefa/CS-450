@@ -271,12 +271,17 @@ struct curve makeCurve(float x0, float y0, float z0, float x1, float y1, float z
 
 void initPoints() {
 	curves[0] = makeCurve(0.75, .6, 1.9, .916, .3, 1.9, 1.082, .3, 1.9, 1.25, .6, 1.9);
+
+	curves[1] = makeCurve(.25, 1.25, 1., 0., 1.2, .5, 0., .8, .5, .25, .75, 1.);
 }
 
 
 void animateTest() {
-	curves[0].p[1].y = sin(Time  * 3.1415) * .6 +.3;
-	curves[0].p[2].y = sin(Time  * 3.1415) * .6 + .3;
+	curves[0].p[1].y = sin(Time  * M_PI) * (curves[0].p[1].y0*2) + curves[0].p[1].y0;
+	curves[0].p[2].y = sin(Time  * M_PI) * (curves[0].p[2].y0 * 2) + curves[0].p[2].y0;
+
+	curves[1].p[1].z = sin(Time * M_PI) * (curves[1].p[1].z0 * 2) + curves[1].p[1].z0;
+	curves[1].p[2].z = sin(Time * M_PI) * (curves[1].p[2].z0 * 2) + curves[1].p[2].z0;
 }
 
 // main program:
@@ -465,9 +470,9 @@ Display( )
 
 	glLineWidth(3.);
 	glColor3f(0., 1., 0.);
-	glBegin(GL_LINE_STRIP);
 	//sizeof(curves) / sizeof(curves[0])
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 2; i++) {
+		glBegin(GL_LINE_STRIP);
 		for (int it = 0; it <= NUMPOINTS; it++)
 		{
 			float t = (float)it / (float)NUMPOINTS;
@@ -477,12 +482,12 @@ Display( )
 			float z = omt*omt*omt*curves[i].p[0].z + 3.f*t*omt*omt*curves[i].p[1].z + 3.f*t*t*omt*curves[i].p[2].z + t*t*t*curves[i].p[3].z;
 			glVertex3f(x, y, z);
 		}
+		glEnd();
 	}
-	glEnd();
 	glLineWidth(1.);
 
 	glColor3f(.7, .7, .7);
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 2; i++) {
 		if (showLines) {
 			glBegin(GL_LINE_STRIP);
 			for (int it = 0; it < sizeof(curves[0].p) / sizeof(curves[0].p[0]); it++) {
