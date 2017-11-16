@@ -221,6 +221,7 @@ float Time;
 #define NUMPOINTS 100
 
 struct Point {
+	float x0, y0, z0;
 	float x, y, z;
 }low1, low2;
 
@@ -228,35 +229,57 @@ struct curve {
 	Point p[4];
 } curves[5];
 
+struct curve makeCurve(float x0, float y0, float z0, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3) {
+	struct curve newCurve;
+
+	newCurve.p[0].x = x0;
+	newCurve.p[0].x0 = x0;
+	newCurve.p[0].y = y0;
+	newCurve.p[0].y0 = y0;
+	newCurve.p[0].z = z0;
+	newCurve.p[0].z0 = z0;
+
+	newCurve.p[1].x = x1;
+	newCurve.p[1].x0 = x1;
+	newCurve.p[1].y = y1;
+	newCurve.p[1].y0 = y1;
+	newCurve.p[1].z = z1;
+	newCurve.p[1].z0 = z1;
+
+	newCurve.p[2].x = x2;
+	newCurve.p[2].x0 = x2;
+	newCurve.p[2].y = y2;
+	newCurve.p[2].y0 = y2;
+	newCurve.p[2].z = z2;
+	newCurve.p[2].z0 = z2;
+
+	newCurve.p[3].x = x3;
+	newCurve.p[3].x0 = x3;
+	newCurve.p[3].y = y3;
+	newCurve.p[3].y0 = y3;
+	newCurve.p[3].z = z3;
+	newCurve.p[3].z0 = z3;
+
+	return newCurve;
+}
+
 void initPoints() {
-	curves[0].p[0].x = -1.;
-	curves[0].p[0].y = 0.5;
-	curves[0].p[0].z = 1.;
-
-	curves[0].p[1].x = 0;
-	curves[0].p[1].y = 2.;
-	curves[0].p[1].z = 1.;
-
-	curves[0].p[2].x = 1.0;
-	curves[0].p[2].y = 2.;
-	curves[0].p[2].z = 1.;
-
-	curves[0].p[3].x = 2.;
-	curves[0].p[3].y = 0.5;
-	curves[0].p[3].z = 1.;
+	curves[0] = makeCurve(-1., 0.5, 1., 0., 2., 1., 1., 2., 1., 2., .5, 1.);
 
 	low1.y = -2.;
 	low2.y = -2.;
+
+	low1.x = -1.;
+	low2.x = 0.;
 }
 
 
 void animateTest() {
-	curves[0].p[1].y = sin(Time  * 3.1415) * 4 - 2;
-	curves[0].p[2].y = sin(Time  * 3.1415) * 4 - 2;
-	float num = sin(Time  * 3.1415) * 4 - 2;
-	if (num >= 1.8 || num <= -1.8) {
-		printf("%f\n", num);
-	}
+	curves[0].p[1].y = sin(Time  * 3.1415) * (curves[0].p[1].y0 - low1.y) - 2;
+	curves[0].p[2].y = sin(Time  * 3.1415) * (curves[0].p[2].y0 - low1.y) - 2;
+	
+	curves[0].p[1].z = sin(Time  * 3.1415) - 1;
+	curves[0].p[2].z = sin(Time  * 3.1415);
 }
 
 // main program:
