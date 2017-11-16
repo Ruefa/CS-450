@@ -275,6 +275,8 @@ void initPoints() {
 	curves[1] = makeCurve(.25, 1.25, 1., 0., 1.2, .5, 0., .8, .5, .25, .75, 1.);
 
 	curves[2] = makeCurve(1.75, 1.25, 1., 2., 1.2, .5, 2., .8, .5, 1.75, .75, 1.);
+
+	curves[3] = makeCurve(.6, 1.15, 1.9, .683, 1.25, 1.9, .766, 1.25, 1.9, .85, 1.15, 1.9);
 }
 
 
@@ -476,7 +478,7 @@ Display( )
 	glLineWidth(3.);
 	glColor3f(0., 1., 0.);
 	//sizeof(curves) / sizeof(curves[0])
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 4; i++) {
 		glBegin(GL_LINE_STRIP);
 		for (int it = 0; it <= NUMPOINTS; it++)
 		{
@@ -492,7 +494,7 @@ Display( )
 	glLineWidth(1.);
 
 	glColor3f(.7, .7, .7);
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 4; i++) {
 		if (showLines) {
 			glBegin(GL_LINE_STRIP);
 			for (int it = 0; it < sizeof(curves[0].p) / sizeof(curves[0].p[0]); it++) {
@@ -510,6 +512,11 @@ Display( )
 			}
 		}
 	}
+
+	glPushMatrix();
+	glTranslatef(.74, 1.15, 1.9);
+	glCallList(BoxList);
+	glPopMatrix();
 
 	// swap the double-buffered framebuffers:
 
