@@ -220,6 +220,9 @@ float Time;
 
 #define NUMPOINTS 100
 
+boolean showPoints = true;
+boolean showLines = true;
+
 struct Point {
 	float x0, y0, z0;
 	float x, y, z;
@@ -479,6 +482,26 @@ Display( )
 	}
 	glEnd();
 	glLineWidth(1.);
+
+	glColor3f(.7, .7, .7);
+	for (int i = 0; i < 1; i++) {
+		if (showLines) {
+			glBegin(GL_LINE_STRIP);
+			for (int it = 0; it < sizeof(curves[0].p) / sizeof(curves[0].p[0]); it++) {
+				glVertex3f(curves[i].p[it].x, curves[i].p[it].y, curves[i].p[it].z);
+			}
+			glEnd();
+		}
+
+		if (showPoints) {
+			for (int it = 0; it < sizeof(curves[0].p) / sizeof(curves[0].p[0]); it++) {
+				glPushMatrix();
+				glTranslatef(curves[i].p[it].x, curves[i].p[it].y, curves[i].p[it].z);
+				glCallList(BoxList);
+				glPopMatrix();
+			}
+		}
+	}
 
 	// swap the double-buffered framebuffers:
 
@@ -799,52 +822,10 @@ InitLists( )
 	BoxList = glGenLists( 1 );
 	glNewList( BoxList, GL_COMPILE );
 
-		glBegin( GL_QUADS );
 
-			glColor3f( 0., 0., 1. );
-			glNormal3f( 0., 0.,  1. );
-				glVertex3f( -dx, -dy,  dz );
-				glVertex3f(  dx, -dy,  dz );
-				glVertex3f(  dx,  dy,  dz );
-				glVertex3f( -dx,  dy,  dz );
+			glutSolidCube(.05);
 
-			glNormal3f( 0., 0., -1. );
-				glTexCoord2f( 0., 0. );
-				glVertex3f( -dx, -dy, -dz );
-				glTexCoord2f( 0., 1. );
-				glVertex3f( -dx,  dy, -dz );
-				glTexCoord2f( 1., 1. );
-				glVertex3f(  dx,  dy, -dz );
-				glTexCoord2f( 1., 0. );
-				glVertex3f(  dx, -dy, -dz );
 
-			glColor3f( 1., 0., 0. );
-			glNormal3f(  1., 0., 0. );
-				glVertex3f(  dx, -dy,  dz );
-				glVertex3f(  dx, -dy, -dz );
-				glVertex3f(  dx,  dy, -dz );
-				glVertex3f(  dx,  dy,  dz );
-
-			glNormal3f( -1., 0., 0. );
-				glVertex3f( -dx, -dy,  dz );
-				glVertex3f( -dx,  dy,  dz );
-				glVertex3f( -dx,  dy, -dz );
-				glVertex3f( -dx, -dy, -dz );
-
-			glColor3f( 0., 1., 0. );
-			glNormal3f( 0.,  1., 0. );
-				glVertex3f( -dx,  dy,  dz );
-				glVertex3f(  dx,  dy,  dz );
-				glVertex3f(  dx,  dy, -dz );
-				glVertex3f( -dx,  dy, -dz );
-
-			glNormal3f( 0., -1., 0. );
-				glVertex3f( -dx, -dy,  dz );
-				glVertex3f( -dx, -dy, -dz );
-				glVertex3f(  dx, -dy, -dz );
-				glVertex3f(  dx, -dy,  dz );
-
-		glEnd( );
 
 	glEndList( );
 
