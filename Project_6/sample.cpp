@@ -287,6 +287,9 @@ void initPoints() {
 
 	//left eye brow
 	curves[5] = makeCurve(.65, 1.25, 1.9, .75, 1.3, 1.9, .85, 1.25, 1.9, .9, 1.2, 1.9);
+
+	//right eye brow
+	curves[6] = makeCurve(1.05, 1.2, 1.9, 1.15, 1.25, 1.9, 1.25, 1.3, 1.9, 1.3, 1.25, 1.9);
 }
 
 
@@ -303,6 +306,7 @@ void animateTest() {
 	curves[2].p[2].z = timeMult * (curves[2].p[2].z0 * 2) + curves[2].p[2].z0;
 
 	curves[5].p[0].y = timeMult * (1.35 - curves[5].p[0].y0) + curves[5].p[0].y0;
+	curves[6].p[3].y = timeMult * (1.3 - curves[6].p[3].y0) + curves[6].p[3].y0;
 }
 
 // main program:
@@ -492,7 +496,7 @@ Display( )
 	glLineWidth(3.);
 	glColor3f(0., 1., 0.);
 	//sizeof(curves) / sizeof(curves[0])
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < 7; i++) {
 		if (i >= 5)
 			glColor3f(.8, .52, .25);
 		glBegin(GL_LINE_STRIP);
@@ -510,7 +514,7 @@ Display( )
 	glLineWidth(1.);
 
 	glColor3f(.7, .7, .7);
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < 7; i++) {
 		if (showLines) {
 			glBegin(GL_LINE_STRIP);
 			for (int it = 0; it < sizeof(curves[0].p) / sizeof(curves[0].p[0]); it++) {
@@ -529,16 +533,21 @@ Display( )
 		}
 	}
 
+	
 	//draw eye 1
 	glPushMatrix();
+	glColor3f(0., 0., 1.);
 	glTranslatef(.74, 1.15, 1.9);
-	glCallList(BoxList);
+	glutSolidCube(.05);
+	//glCallList(BoxList);
 	glPopMatrix();
 
 	//draw eye 2
 	glPushMatrix();
+	glColor3f(0., 0., 1.);
 	glTranslatef(1.24, 1.15, 1.9);
-	glCallList(BoxList);
+	glutSolidCube(.05);
+	//glCallList(BoxList);
 	glPopMatrix();
 
 	// swap the double-buffered framebuffers:
