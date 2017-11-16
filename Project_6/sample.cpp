@@ -286,7 +286,7 @@ void initPoints() {
 		curves[4].p[i].x += .5;
 
 	//left eye brow
-
+	curves[5] = makeCurve(.65, 1.25, 1.9, .75, 1.3, 1.9, .85, 1.25, 1.9, .9, 1.2, 1.9);
 }
 
 
@@ -488,7 +488,9 @@ Display( )
 	glLineWidth(3.);
 	glColor3f(0., 1., 0.);
 	//sizeof(curves) / sizeof(curves[0])
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 6; i++) {
+		if (i >= 5)
+			glColor3f(.8, .52, .25);
 		glBegin(GL_LINE_STRIP);
 		for (int it = 0; it <= NUMPOINTS; it++)
 		{
@@ -504,7 +506,7 @@ Display( )
 	glLineWidth(1.);
 
 	glColor3f(.7, .7, .7);
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 6; i++) {
 		if (showLines) {
 			glBegin(GL_LINE_STRIP);
 			for (int it = 0; it < sizeof(curves[0].p) / sizeof(curves[0].p[0]); it++) {
