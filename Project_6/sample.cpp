@@ -217,6 +217,7 @@ void	HsvRgb( float[3], float [3] );
 
 #define MS_PER_CYCLE 1000
 float Time;
+boolean doAnimate = true;
 
 #define NUMPOINTS 100
 
@@ -463,7 +464,9 @@ Display( )
 
 	// draw the current object:
 
-	animateTest();
+	if (doAnimate) {
+		animateTest();
+	}
 
 	glLineWidth(3.);
 	glColor3f(0., 1., 0.);
@@ -870,6 +873,10 @@ Keyboard( unsigned char c, int x, int y )
 
 		case 'b':
 			showPoints = !showPoints;
+			break;
+
+		case 'f':
+			doAnimate = !doAnimate;
 			break;
 
 		default:
