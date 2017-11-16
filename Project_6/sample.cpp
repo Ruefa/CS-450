@@ -822,10 +822,7 @@ InitLists( )
 	BoxList = glGenLists( 1 );
 	glNewList( BoxList, GL_COMPILE );
 
-
 			glutSolidCube(.05);
-
-
 
 	glEndList( );
 
@@ -866,6 +863,14 @@ Keyboard( unsigned char c, int x, int y )
 		case ESCAPE:
 			DoMainMenu( QUIT );	// will not return here
 			break;				// happy compiler
+
+		case 'l':
+			showLines = !showLines;
+			break;
+
+		case 'b':
+			showPoints = !showPoints;
+			break;
 
 		default:
 			fprintf( stderr, "Don't know what to do with keyboard hit: '%c' (0x%0x)\n", c, c );
