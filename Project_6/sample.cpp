@@ -217,7 +217,7 @@ void	HsvRgb( float[3], float [3] );
 
 #define MS_PER_CYCLE 1000
 float Time;
-boolean doAnimate = true;
+boolean doAnimate = false;
 
 #define NUMPOINTS 100
 
@@ -268,7 +268,7 @@ struct curve makeCurve(float x0, float y0, float z0, float x1, float y1, float z
 }
 
 void initPoints() {
-	curves[0] = makeCurve(-1., 0.5, 1., 0., 2., 1., 1., 2., 1., 2., .5, 1.);
+	curves[0] = makeCurve(0, 0.5, .5, .25, 1, .5, .5, 0, .5, .75, .5, .5);
 
 	low1.y = -2.;
 	low2.y = -2.;
@@ -476,11 +476,11 @@ Display( )
 		for (int it = 0; it <= NUMPOINTS; it++)
 		{
 			float t = (float)it / (float)NUMPOINTS;
-				float omt = 1.f - t;
-				float x = omt*omt*omt*curves[i].p[0].x + 3.f*t*omt*omt*curves[i].p[1].x + 3.f*t*t*omt*curves[i].p[2].x + t*t*t*curves[i].p[3].x;
-				float y = omt*omt*omt*curves[i].p[0].y + 3.f*t*omt*omt*curves[i].p[1].y + 3.f*t*t*omt*curves[i].p[2].y + t*t*t*curves[i].p[3].y;
-				float z = omt*omt*omt*curves[i].p[0].z + 3.f*t*omt*omt*curves[i].p[1].z + 3.f*t*t*omt*curves[i].p[2].z + t*t*t*curves[i].p[3].z;
-				glVertex3f(x, y, z);
+			float omt = 1.f - t;
+			float x = omt*omt*omt*curves[i].p[0].x + 3.f*t*omt*omt*curves[i].p[1].x + 3.f*t*t*omt*curves[i].p[2].x + t*t*t*curves[i].p[3].x;
+			float y = omt*omt*omt*curves[i].p[0].y + 3.f*t*omt*omt*curves[i].p[1].y + 3.f*t*t*omt*curves[i].p[2].y + t*t*t*curves[i].p[3].y;
+			float z = omt*omt*omt*curves[i].p[0].z + 3.f*t*omt*omt*curves[i].p[1].z + 3.f*t*t*omt*curves[i].p[2].z + t*t*t*curves[i].p[3].z;
+			glVertex3f(x, y, z);
 		}
 	}
 	glEnd();
