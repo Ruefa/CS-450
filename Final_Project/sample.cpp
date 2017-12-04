@@ -235,14 +235,38 @@ struct room {
 	struct room *door3 = NULL;
 }headRoom;
 
+struct pointList {
+	float x, y, z;
+	struct pointList *next = NULL;
+	struct room *roomOnPoint = NULL;
+}headPoint;
+
+void addPoint(float x, float y, float z, struct room *newRoom) {
+	struct pointList *newPoint = (struct pointList *)malloc(sizeof(pointList));
+
+	newPoint->x = x;
+	newPoint->y = y;
+	newPoint->z = z;
+	newPoint->roomOnPoint = newRoom;
+
+	newPoint->next = headPoint.next;
+	headPoint.next = newPoint;
+}
+
 void InitDungeon(struct room *curRoom) {
 	int randDoor;
 	bool created = false;
 
+	//initialize head nodes for tree and list structures
 	if (numRooms == 0) {
 		curRoom->x = 0.;
 		curRoom->y = 0.;
 		curRoom->z = 0.;
+
+		headPoint.x = 0.;
+		headPoint.y = 0.;
+		headPoint.z = 0.;
+		headPoint.roomOnPoint = &headRoom;
 	}
 
 	numRooms++;
@@ -519,6 +543,7 @@ main( int argc, char *argv[ ] )
 	// init dungeon
 
 	srand(time(NULL));
+
 	InitDungeon(&headRoom);
 
 	// create the display structures that will not change:
