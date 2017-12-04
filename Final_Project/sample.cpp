@@ -223,6 +223,7 @@ float dx = BOXSIZE / 2.f;
 float dy = BOXSIZE / 2.f;
 float dz = BOXSIZE / 2.f;
 float doorMult = 3.5;
+float roomDistMult = 3.;
 
 int numRooms = 0;
 struct room {
@@ -247,7 +248,7 @@ void InitDungeon(struct room *curRoom) {
 	srand(time(NULL));
 	randDoor = rand() % 4;
 
-	randDoor = 0;
+	randDoor = 3;
 	switch (randDoor) {
 		case 0:
 			curRoom->door0 = (struct room *)malloc(sizeof(struct room));
@@ -257,7 +258,7 @@ void InitDungeon(struct room *curRoom) {
 			curRoom->door0->door3 = NULL;
 			curRoom->door0->x = curRoom->x;
 			curRoom->door0->y = curRoom->y;
-			curRoom->door0->z = curRoom->z + 4*dz;
+			curRoom->door0->z = curRoom->z + roomDistMult*dz;
 			//InitDungeon(curRoom->door0);
 			break;
 
@@ -267,6 +268,9 @@ void InitDungeon(struct room *curRoom) {
 			curRoom->door1->door1 = NULL;
 			curRoom->door1->door2 = NULL;
 			curRoom->door1->door3 = NULL;
+			curRoom->door1->x = curRoom->x;
+			curRoom->door1->y = curRoom->y;
+			curRoom->door1->z = curRoom->z - roomDistMult*dz;
 			//InitDungeon(curRoom->door1);
 			break;
 
@@ -276,6 +280,9 @@ void InitDungeon(struct room *curRoom) {
 			curRoom->door2->door1 = NULL;
 			curRoom->door2->door2 = NULL;
 			curRoom->door2->door3 = curRoom;
+			curRoom->door2->x = curRoom->x + roomDistMult*dx;
+			curRoom->door2->y = curRoom->y;
+			curRoom->door2->z = curRoom->z;
 			//InitDungeon(curRoom->door2);
 			break;
 
@@ -285,6 +292,9 @@ void InitDungeon(struct room *curRoom) {
 			curRoom->door3->door1 = NULL;
 			curRoom->door3->door2 = curRoom;
 			curRoom->door3->door3 = NULL;
+			curRoom->door3->x = curRoom->x - roomDistMult*dx;
+			curRoom->door3->y = curRoom->y;
+			curRoom->door3->z = curRoom->z;
 			//InitDungeon(curRoom->door3);
 			break;
 
@@ -633,9 +643,10 @@ Display( )
 	glCallList( headRoom.wallList );
 	glPushMatrix();
 
+	struct room *testRoom = headRoom.door3;
 	glPushMatrix();
-	glTranslatef(headRoom.door0->x, headRoom.door0->y, headRoom.door0->z);
-	glCallList(headRoom.door0->wallList);
+	glTranslatef(testRoom->x, testRoom->y, testRoom->z);
+	glCallList(testRoom->wallList);
 	glPushMatrix();
 
 	// swap the double-buffered framebuffers:
