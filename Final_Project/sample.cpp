@@ -219,6 +219,11 @@ void	Visibility( int );
 void	Axes( float );
 void	HsvRgb( float[3], float [3] );
 
+float dx = BOXSIZE / 2.f;
+float dy = BOXSIZE / 2.f;
+float dz = BOXSIZE / 2.f;
+float doorMult = 3.5;
+
 int numRooms = 0;
 struct room {
 	float x, y, z;
@@ -242,25 +247,44 @@ void InitDungeon(struct room *curRoom) {
 	srand(time(NULL));
 	randDoor = rand() % 4;
 
-	randDoor = 3;
+	randDoor = 0;
 	switch (randDoor) {
 		case 0:
 			curRoom->door0 = (struct room *)malloc(sizeof(struct room));
+			curRoom->door0->door0 = NULL;
+			curRoom->door0->door1 = curRoom;
+			curRoom->door0->door2 = NULL;
+			curRoom->door0->door3 = NULL;
+			curRoom->door0->x = curRoom->x;
+			curRoom->door0->y = curRoom->y;
+			curRoom->door0->z = curRoom->z + 4*dz;
 			//InitDungeon(curRoom->door0);
 			break;
 
 		case 1:
 			curRoom->door1 = (struct room *)malloc(sizeof(struct room));
+			curRoom->door1->door0 = curRoom;
+			curRoom->door1->door1 = NULL;
+			curRoom->door1->door2 = NULL;
+			curRoom->door1->door3 = NULL;
 			//InitDungeon(curRoom->door1);
 			break;
 
 		case 2:
 			curRoom->door2 = (struct room *)malloc(sizeof(struct room));
+			curRoom->door2->door0 = NULL;
+			curRoom->door2->door1 = NULL;
+			curRoom->door2->door2 = NULL;
+			curRoom->door2->door3 = curRoom;
 			//InitDungeon(curRoom->door2);
 			break;
 
 		case 3:
 			curRoom->door3 = (struct room *)malloc(sizeof(struct room));
+			curRoom->door3->door0 = NULL;
+			curRoom->door3->door1 = NULL;
+			curRoom->door3->door2 = curRoom;
+			curRoom->door3->door3 = NULL;
 			//InitDungeon(curRoom->door3);
 			break;
 
@@ -268,7 +292,159 @@ void InitDungeon(struct room *curRoom) {
 			printf("Incorrect room number in door generation");
 			break;
 	}
+}
 
+void roomLists(struct room *curRoom, struct room *prevRoom) {
+	curRoom->wallList = glGenLists(1);
+	glNewList(curRoom->wallList, GL_COMPILE);
+
+	glBegin(GL_QUADS);
+
+	glColor3f(0., 0.5, 0.);
+
+	//wall0
+	glNormal3f(0., 0., 1.);
+	if (curRoom->door0 == NULL) {
+		glVertex3f(-dx, -dy, dz);
+		glVertex3f(dx, -dy, dz);
+		glVertex3f(dx, dy, dz);
+		glVertex3f(-dx, dy, dz);
+	}
+	else {
+		//top portion
+		glVertex3f(-dx, dy, dz);
+		glVertex3f(-dx, 0, dz);
+		glVertex3f(dx, 0, dz);
+		glVertex3f(dx, dy, dz);
+
+		//door side 1
+		glVertex3f(-dx, 0, dz);
+		glVertex3f(-dx, -dy, dz);
+		glVertex3f(-dx / doorMult, -dy, dz);
+		glVertex3f(-dx / doorMult, 0, dz);
+
+		//door side 2
+		glVertex3f(dx, 0, dz);
+		glVertex3f(dx, -dy, dz);
+		glVertex3f(dx / doorMult, -dy, dz);
+		glVertex3f(dx / doorMult, 0, dz);
+	}
+
+
+	//wall1
+	glNormal3f(0., 0., -1.);
+	if (curRoom->door1 == NULL) {
+		glTexCoord2f(0., 0.);
+		glVertex3f(-dx, -dy, -dz);
+		glTexCoord2f(0., 1.);
+		glVertex3f(-dx, dy, -dz);
+		glTexCoord2f(1., 1.);
+		glVertex3f(dx, dy, -dz);
+		glTexCoord2f(1., 0.);
+		glVertex3f(dx, -dy, -dz);
+	}
+	else {
+		//top portion
+		glVertex3f(-dx, dy, -dz);
+		glVertex3f(-dx, 0, -dz);
+		glVertex3f(dx, 0, -dz);
+		glVertex3f(dx, dy, -dz);
+
+		//door side 1
+		glVertex3f(-dx, 0, -dz);
+		glVertex3f(-dx, -dy, -dz);
+		glVertex3f(-dx / doorMult, -dy, -dz);
+		glVertex3f(-dx / doorMult, 0, -dz);
+
+		//door side 2
+		glVertex3f(dx, 0, -dz);
+		glVertex3f(dx, -dy, -dz);
+		glVertex3f(dx / doorMult, -dy, -dz);
+		glVertex3f(dx / doorMult, 0, -dz);
+	}
+
+
+	//wall2
+	glNormal3f(1., 0., 0.);
+	if (curRoom->door2 == NULL) {
+		glVertex3f(dx, -dy, dz);
+		glVertex3f(dx, -dy, -dz);
+		glVertex3f(dx, dy, -dz);
+		glVertex3f(dx, dy, dz);
+	}
+	else {
+		glVertex3f(dx, 0, dz);
+		glVertex3f(dx, 0, -dz);
+		glVertex3f(dx, dy, -dz);
+		glVertex3f(dx, dy, dz);
+
+		glVertex3f(dx, 0, -dz);
+		glVertex3f(dx, -dy, -dz);
+		glVertex3f(dx, -dy, -dz / doorMult);
+		glVertex3f(dx, 0, -dz / doorMult);
+
+		glVertex3f(dx, 0, dz);
+		glVertex3f(dx, -dy, dz);
+		glVertex3f(dx, -dy, dz / doorMult);
+		glVertex3f(dx, 0, dz / doorMult);
+	}
+
+	//wall3
+	glNormal3f(-1., 0., 0.);
+	if (curRoom->door3 == NULL) {
+		glVertex3f(-dx, -dy, dz);
+		glVertex3f(-dx, dy, dz);
+		glVertex3f(-dx, dy, -dz);
+		glVertex3f(-dx, -dy, -dz);
+	}
+	else {
+		glVertex3f(-dx, 0, dz);
+		glVertex3f(-dx, 0, -dz);
+		glVertex3f(-dx, dy, -dz);
+		glVertex3f(-dx, dy, dz);
+
+		glVertex3f(-dx, 0, -dz);
+		glVertex3f(-dx, -dy, -dz);
+		glVertex3f(-dx, -dy, -dz / doorMult);
+		glVertex3f(-dx, 0, -dz / doorMult);
+
+		glVertex3f(-dx, 0, dz);
+		glVertex3f(-dx, -dy, dz);
+		glVertex3f(-dx, -dy, dz / doorMult);
+		glVertex3f(-dx, 0, dz / doorMult);
+	}
+
+	//ceiling
+	glColor3f(0.87, 0.72, 0.53);
+	glNormal3f(0., 1., 0.);
+	glVertex3f(-dx, dy, dz);
+	glVertex3f(dx, dy, dz);
+	glVertex3f(dx, dy, -dz);
+	glVertex3f(-dx, dy, -dz);
+
+	//floor
+	glColor3f(.5, 0.5, 0.5);
+	glNormal3f(0., -1., 0.);
+	glVertex3f(-dx, -dy, dz);
+	glVertex3f(-dx, -dy, -dz);
+	glVertex3f(dx, -dy, -dz);
+	glVertex3f(dx, -dy, dz);
+
+	glEnd();
+	glEndList();
+
+	if (curRoom->door0 != NULL && curRoom->door0 != prevRoom) {
+		roomLists(curRoom->door0, curRoom);
+	}
+	if (curRoom->door1 != NULL && curRoom->door1 != prevRoom) {
+		roomLists(curRoom->door1, curRoom);
+	}
+	if (curRoom->door2 != NULL && curRoom->door2 != prevRoom) {
+		roomLists(curRoom->door2, curRoom);
+	}
+	if (curRoom->door3 != NULL && curRoom->door3 != prevRoom) {
+		roomLists(curRoom->door3, curRoom);
+	}
 }
 
 // main program:
@@ -452,7 +628,15 @@ Display( )
 
 	// draw the current object:
 
+	glPushMatrix();
+	glTranslatef(headRoom.x, headRoom.y, headRoom.z);
 	glCallList( headRoom.wallList );
+	glPushMatrix();
+
+	glPushMatrix();
+	glTranslatef(headRoom.door0->x, headRoom.door0->y, headRoom.door0->z);
+	glCallList(headRoom.door0->wallList);
+	glPushMatrix();
 
 	// swap the double-buffered framebuffers:
 
@@ -761,154 +945,11 @@ InitGraphics( )
 void
 InitLists( )
 {
-	float dx = BOXSIZE / 2.f;
-	float dy = BOXSIZE / 2.f;
-	float dz = BOXSIZE / 2.f;
-	float doorMult = 3.5;
 	glutSetWindow( MainWindow );
 
 	// create the object:
 
-	headRoom.wallList = glGenLists( 1 );
-	glNewList( headRoom.wallList, GL_COMPILE );
-
-		glBegin( GL_QUADS );
-
-			glColor3f( 0., 0.5, 0. );
-
-			//wall0
-			
-			glNormal3f( 0., 0.,  1. );
-			if (headRoom.door0 == NULL) {
-				glVertex3f(-dx, -dy, dz);
-				glVertex3f(dx, -dy, dz);
-				glVertex3f(dx, dy, dz);
-				glVertex3f(-dx, dy, dz);
-			}
-			else {
-				//top portion
-				glVertex3f(-dx, dy, dz);
-				glVertex3f(-dx, 0, dz);
-				glVertex3f(dx, 0, dz);
-				glVertex3f(dx, dy, dz);
-
-				//door side 1
-				glVertex3f(-dx, 0, dz);
-				glVertex3f(-dx, -dy, dz);
-				glVertex3f(-dx / doorMult, -dy, dz);
-				glVertex3f(-dx / doorMult, 0, dz);
-
-				//door side 2
-				glVertex3f(dx, 0, dz);
-				glVertex3f(dx, -dy, dz);
-				glVertex3f(dx / doorMult, -dy, dz);
-				glVertex3f(dx / doorMult, 0, dz);
-			}
-
-			
-			//wall1
-			glNormal3f( 0., 0., -1. );
-			if (headRoom.door1 == NULL) {
-				glTexCoord2f(0., 0.);
-				glVertex3f(-dx, -dy, -dz);
-				glTexCoord2f(0., 1.);
-				glVertex3f(-dx, dy, -dz);
-				glTexCoord2f(1., 1.);
-				glVertex3f(dx, dy, -dz);
-				glTexCoord2f(1., 0.);
-				glVertex3f(dx, -dy, -dz);
-			}
-			else {
-				//top portion
-				glVertex3f(-dx, dy, -dz);
-				glVertex3f(-dx, 0, -dz);
-				glVertex3f(dx, 0, -dz);
-				glVertex3f(dx, dy, -dz);
-
-				//door side 1
-				glVertex3f(-dx, 0, -dz);
-				glVertex3f(-dx, -dy, -dz);
-				glVertex3f(-dx / doorMult, -dy, -dz);
-				glVertex3f(-dx / doorMult, 0, -dz);
-
-				//door side 2
-				glVertex3f(dx, 0, -dz);
-				glVertex3f(dx, -dy, -dz);
-				glVertex3f(dx / doorMult, -dy, -dz);
-				glVertex3f(dx / doorMult, 0, -dz);
-			}
-
-			
-			//wall2
-			glNormal3f(  1., 0., 0. );
-			if (headRoom.door2 == NULL) {
-				glVertex3f(dx, -dy, dz);
-				glVertex3f(dx, -dy, -dz);
-				glVertex3f(dx, dy, -dz);
-				glVertex3f(dx, dy, dz);
-			}
-			else {
-				glVertex3f(dx, 0, dz);
-				glVertex3f(dx, 0, -dz);
-				glVertex3f(dx, dy, -dz);
-				glVertex3f(dx, dy, dz);
-
-				glVertex3f(dx, 0, -dz);
-				glVertex3f(dx, -dy, -dz);
-				glVertex3f(dx, -dy, -dz / doorMult);
-				glVertex3f(dx, 0, -dz / doorMult);
-
-				glVertex3f(dx, 0, dz);
-				glVertex3f(dx, -dy, dz);
-				glVertex3f(dx, -dy, dz / doorMult);
-				glVertex3f(dx, 0, dz / doorMult);
-			}
-
-			glColor3f(0., 0., 0.5);
-			//wall3
-			glNormal3f( -1., 0., 0. );
-			if (headRoom.door3 == NULL) {
-				glVertex3f(-dx, -dy, dz);
-				glVertex3f(-dx, dy, dz);
-				glVertex3f(-dx, dy, -dz);
-				glVertex3f(-dx, -dy, -dz);
-			}
-			else {
-				glVertex3f(-dx, 0, dz);
-				glVertex3f(-dx, 0, -dz);
-				glVertex3f(-dx, dy, -dz);
-				glVertex3f(-dx, dy, dz);
-
-				glVertex3f(-dx, 0, -dz);
-				glVertex3f(-dx, -dy, -dz);
-				glVertex3f(-dx, -dy, -dz / doorMult);
-				glVertex3f(-dx, 0, -dz / doorMult);
-
-				glVertex3f(-dx, 0, dz);
-				glVertex3f(-dx, -dy, dz);
-				glVertex3f(-dx, -dy, dz / doorMult);
-				glVertex3f(-dx, 0, dz / doorMult);
-			}
-
-			//ceiling
-			glColor3f(0.87, 0.72, 0.53);
-			glNormal3f( 0.,  1., 0. );
-				glVertex3f( -dx,  dy,  dz );
-				glVertex3f(  dx,  dy,  dz );
-				glVertex3f(  dx,  dy, -dz );
-				glVertex3f( -dx,  dy, -dz );
-
-			//floor
-			glColor3f(.5, 0.5, 0.5);
-			glNormal3f( 0., -1., 0. );
-				glVertex3f( -dx, -dy,  dz );
-				glVertex3f( -dx, -dy, -dz );
-				glVertex3f(  dx, -dy, -dz );
-				glVertex3f(  dx, -dy,  dz );
-
-		glEnd( );
-
-	glEndList( );
+	roomLists(&headRoom, NULL);
 
 
 	// create the axes:
