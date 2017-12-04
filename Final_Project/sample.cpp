@@ -235,9 +235,9 @@ struct room {
 	struct room *door3 = NULL;
 }headRoom;
 
-
 void InitDungeon(struct room *curRoom) {
 	int randDoor;
+	bool created = false;
 
 	if (numRooms == 0) {
 		curRoom->x = 0.;
@@ -245,62 +245,84 @@ void InitDungeon(struct room *curRoom) {
 		curRoom->z = 0.;
 	}
 
-	srand(time(NULL));
-	randDoor = rand() % 4;
+	numRooms++;
 
-	randDoor = 0;
-	switch (randDoor) {
-		case 0:
-			curRoom->door0 = (struct room *)malloc(sizeof(struct room));
-			curRoom->door0->door0 = NULL;
-			curRoom->door0->door1 = curRoom;
-			curRoom->door0->door2 = NULL;
-			curRoom->door0->door3 = NULL;
-			curRoom->door0->x = curRoom->x;
-			curRoom->door0->y = curRoom->y;
-			curRoom->door0->z = curRoom->z + roomDistMult*dz;
-			//InitDungeon(curRoom->door0);
-			break;
+	if (numRooms < 100) {
+		while (!created) {
+			randDoor = rand() % 4;
 
-		case 1:
-			curRoom->door1 = (struct room *)malloc(sizeof(struct room));
-			curRoom->door1->door0 = curRoom;
-			curRoom->door1->door1 = NULL;
-			curRoom->door1->door2 = NULL;
-			curRoom->door1->door3 = NULL;
-			curRoom->door1->x = curRoom->x;
-			curRoom->door1->y = curRoom->y;
-			curRoom->door1->z = curRoom->z - roomDistMult*dz;
-			//InitDungeon(curRoom->door1);
-			break;
+			switch (randDoor) {
+			case 0:
+				if (curRoom->door0 == NULL) {
+					curRoom->door0 = (struct room *)malloc(sizeof(struct room));
+					curRoom->door0->door0 = NULL;
+					curRoom->door0->door1 = curRoom;
+					curRoom->door0->door2 = NULL;
+					curRoom->door0->door3 = NULL;
+					curRoom->door0->x = curRoom->x;
+					curRoom->door0->y = curRoom->y;
+					curRoom->door0->z = curRoom->z + roomDistMult*dz;
+					InitDungeon(curRoom->door0);
+					created = true;
+				}
+				break;
 
-		case 2:
-			curRoom->door2 = (struct room *)malloc(sizeof(struct room));
-			curRoom->door2->door0 = NULL;
-			curRoom->door2->door1 = NULL;
-			curRoom->door2->door2 = NULL;
-			curRoom->door2->door3 = curRoom;
-			curRoom->door2->x = curRoom->x + roomDistMult*dx;
-			curRoom->door2->y = curRoom->y;
-			curRoom->door2->z = curRoom->z;
-			//InitDungeon(curRoom->door2);
-			break;
+			case 1:
+				if (curRoom->door1 == NULL) {
+					curRoom->door1 = (struct room *)malloc(sizeof(struct room));
+					curRoom->door1->door0 = curRoom;
+					curRoom->door1->door1 = NULL;
+					curRoom->door1->door2 = NULL;
+					curRoom->door1->door3 = NULL;
+					curRoom->door1->x = curRoom->x;
+					curRoom->door1->y = curRoom->y;
+					curRoom->door1->z = curRoom->z - roomDistMult*dz;
+					InitDungeon(curRoom->door1);
+					created = true;
+				}
+				break;
 
-		case 3:
-			curRoom->door3 = (struct room *)malloc(sizeof(struct room));
-			curRoom->door3->door0 = NULL;
-			curRoom->door3->door1 = NULL;
-			curRoom->door3->door2 = curRoom;
-			curRoom->door3->door3 = NULL;
-			curRoom->door3->x = curRoom->x - roomDistMult*dx;
-			curRoom->door3->y = curRoom->y;
-			curRoom->door3->z = curRoom->z;
-			//InitDungeon(curRoom->door3);
-			break;
+			case 2:
+				if (curRoom->door2 == NULL) {
+					curRoom->door2 = (struct room *)malloc(sizeof(struct room));
+					curRoom->door2->door0 = NULL;
+					curRoom->door2->door1 = NULL;
+					curRoom->door2->door2 = NULL;
+					curRoom->door2->door3 = curRoom;
+					curRoom->door2->x = curRoom->x + roomDistMult*dx;
+					curRoom->door2->y = curRoom->y;
+					curRoom->door2->z = curRoom->z;
+					InitDungeon(curRoom->door2);
+					created = true;
+				}
+				break;
 
-		default:
-			printf("Incorrect room number in door generation");
-			break;
+			case 3:
+				if (curRoom->door3 == NULL) {
+					curRoom->door3 = (struct room *)malloc(sizeof(struct room));
+					curRoom->door3->door0 = NULL;
+					curRoom->door3->door1 = NULL;
+					curRoom->door3->door2 = curRoom;
+					curRoom->door3->door3 = NULL;
+					curRoom->door3->x = curRoom->x - roomDistMult*dx;
+					curRoom->door3->y = curRoom->y;
+					curRoom->door3->z = curRoom->z;
+					InitDungeon(curRoom->door3);
+					created = true;
+				}
+				break;
+
+			default:
+				printf("Incorrect room number in door generation");
+				break;
+			}
+			if (curRoom->door0 != NULL && curRoom->door1 != NULL && curRoom->door2 != NULL && curRoom->door3 != NULL) {
+				created = true;
+			}
+			else if (rand() % 4 == 0) {
+				created = false;
+			}
+		}
 	}
 }
 
@@ -496,6 +518,7 @@ main( int argc, char *argv[ ] )
 
 	// init dungeon
 
+	srand(time(NULL));
 	InitDungeon(&headRoom);
 
 	// create the display structures that will not change:
