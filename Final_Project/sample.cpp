@@ -241,16 +241,34 @@ struct pointList {
 	struct room *roomOnPoint = NULL;
 }headPoint;
 
-void addPoint(float x, float y, float z, struct room *newRoom) {
+void addPoint(struct room *newRoom) {
 	struct pointList *newPoint = (struct pointList *)malloc(sizeof(pointList));
 
-	newPoint->x = x;
-	newPoint->y = y;
-	newPoint->z = z;
+	newPoint->x = newRoom->x;
+	newPoint->y = newRoom->y;
+	newPoint->z = newRoom->z;
 	newPoint->roomOnPoint = newRoom;
 
 	newPoint->next = headPoint.next;
 	headPoint.next = newPoint;
+}
+
+struct room * exists(struct room *curRoom, float x, float y, float z) {
+	struct room *roomBuffer = (struct room *)malloc(sizeof(struct room));
+
+	if (curRoom->x == x && curRoom->y == y && curRoom->z == z) {
+		return curRoom;
+	}
+	
+	roomBuffer = exists(curRoom->door0, x, y, z);
+	if (roomBuffer != NULL) {
+		return roomBuffer;
+	}
+
+	roomBuffer = exists(curRoom->door0, x, y, z);
+	{
+
+	}
 }
 
 void InitDungeon(struct room *curRoom) {
