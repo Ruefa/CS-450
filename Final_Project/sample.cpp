@@ -15,6 +15,10 @@
 #include <GL/glu.h>
 #include "glut.h"
 
+//#include "room.cpp"
+#include <time.h>
+#include <stdlib.h>
+
 
 //	This is a sample OpenGL / GLUT program
 //
@@ -215,6 +219,58 @@ void	Visibility( int );
 void	Axes( float );
 void	HsvRgb( float[3], float [3] );
 
+int numRooms = 0;
+struct room {
+	float x, y, z;
+	GLuint	wallList;
+	struct room *door0 = NULL;
+	struct room *door1 = NULL;
+	struct room *door2 = NULL;
+	struct room *door3 = NULL;
+}headRoom;
+
+
+void InitDungeon(struct room *curRoom) {
+	int randDoor;
+
+	if (numRooms == 0) {
+		curRoom->x = 0.;
+		curRoom->y = 0.;
+		curRoom->z = 0.;
+	}
+
+	srand(time(NULL));
+	randDoor = rand() % 4;
+
+	randDoor = 3;
+	switch (randDoor) {
+		case 0:
+			curRoom->door0 = (struct room *)malloc(sizeof(struct room));
+			//InitDungeon(curRoom->door0);
+			break;
+
+		case 1:
+			curRoom->door1 = (struct room *)malloc(sizeof(struct room));
+			//InitDungeon(curRoom->door1);
+			break;
+
+		case 2:
+			curRoom->door2 = (struct room *)malloc(sizeof(struct room));
+			//InitDungeon(curRoom->door2);
+			break;
+
+		case 3:
+			curRoom->door3 = (struct room *)malloc(sizeof(struct room));
+			//InitDungeon(curRoom->door3);
+			break;
+
+		default:
+			printf("Incorrect room number in door generation");
+			break;
+	}
+
+}
+
 // main program:
 
 int
@@ -231,6 +287,9 @@ main( int argc, char *argv[ ] )
 
 	InitGraphics( );
 
+	// init dungeon
+
+	InitDungeon(&headRoom);
 
 	// create the display structures that will not change:
 
@@ -393,43 +452,7 @@ Display( )
 
 	// draw the current object:
 
-	glCallList( BoxList );
-
-	if( DepthFightingOn != 0 )
-	{
-		glPushMatrix( );
-			glRotatef( 90.,   0., 1., 0. );
-			glCallList( BoxList );
-		glPopMatrix( );
-	}
-
-
-	// draw some gratuitous text that just rotates on top of the scene:
-
-	glDisable( GL_DEPTH_TEST );
-	glColor3f( 0., 1., 1. );
-	DoRasterString( 0., 1., 0., "Text That Moves" );
-
-
-	// draw some gratuitous text that is fixed on the screen:
-	//
-	// the projection matrix is reset to define a scene whose
-	// world coordinate system goes from 0-100 in each axis
-	//
-	// this is called "percent units", and is just a convenience
-	//
-	// the modelview matrix is reset to identity as we don't
-	// want to transform these coordinates
-
-	glDisable( GL_DEPTH_TEST );
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity( );
-	gluOrtho2D( 0., 100.,     0., 100. );
-	glMatrixMode( GL_MODELVIEW );
-	glLoadIdentity( );
-	glColor3f( 1., 1., 1. );
-	DoRasterString( 5., 5., 0., "Text That Doesn't" );
-
+	glCallList( headRoom.wallList );
 
 	// swap the double-buffered framebuffers:
 
@@ -741,52 +764,142 @@ InitLists( )
 	float dx = BOXSIZE / 2.f;
 	float dy = BOXSIZE / 2.f;
 	float dz = BOXSIZE / 2.f;
+	float doorMult = 3.5;
 	glutSetWindow( MainWindow );
 
 	// create the object:
 
-	BoxList = glGenLists( 1 );
-	glNewList( BoxList, GL_COMPILE );
+	headRoom.wallList = glGenLists( 1 );
+	glNewList( headRoom.wallList, GL_COMPILE );
 
 		glBegin( GL_QUADS );
 
-			glColor3f( 0., 0., 1. );
+			glColor3f( 0., 0.5, 0. );
+
+			//wall0
+			
 			glNormal3f( 0., 0.,  1. );
-				glVertex3f( -dx, -dy,  dz );
-				glVertex3f(  dx, -dy,  dz );
-				glVertex3f(  dx,  dy,  dz );
-				glVertex3f( -dx,  dy,  dz );
+			if (headRoom.door0 == NULL) {
+				glVertex3f(-dx, -dy, dz);
+				glVertex3f(dx, -dy, dz);
+				glVertex3f(dx, dy, dz);
+				glVertex3f(-dx, dy, dz);
+			}
+			else {
+				//top portion
+				glVertex3f(-dx, dy, dz);
+				glVertex3f(-dx, 0, dz);
+				glVertex3f(dx, 0, dz);
+				glVertex3f(dx, dy, dz);
 
+				//door side 1
+				glVertex3f(-dx, 0, dz);
+				glVertex3f(-dx, -dy, dz);
+				glVertex3f(-dx / doorMult, -dy, dz);
+				glVertex3f(-dx / doorMult, 0, dz);
+
+				//door side 2
+				glVertex3f(dx, 0, dz);
+				glVertex3f(dx, -dy, dz);
+				glVertex3f(dx / doorMult, -dy, dz);
+				glVertex3f(dx / doorMult, 0, dz);
+			}
+
+			
+			//wall1
 			glNormal3f( 0., 0., -1. );
-				glTexCoord2f( 0., 0. );
-				glVertex3f( -dx, -dy, -dz );
-				glTexCoord2f( 0., 1. );
-				glVertex3f( -dx,  dy, -dz );
-				glTexCoord2f( 1., 1. );
-				glVertex3f(  dx,  dy, -dz );
-				glTexCoord2f( 1., 0. );
-				glVertex3f(  dx, -dy, -dz );
+			if (headRoom.door1 == NULL) {
+				glTexCoord2f(0., 0.);
+				glVertex3f(-dx, -dy, -dz);
+				glTexCoord2f(0., 1.);
+				glVertex3f(-dx, dy, -dz);
+				glTexCoord2f(1., 1.);
+				glVertex3f(dx, dy, -dz);
+				glTexCoord2f(1., 0.);
+				glVertex3f(dx, -dy, -dz);
+			}
+			else {
+				//top portion
+				glVertex3f(-dx, dy, -dz);
+				glVertex3f(-dx, 0, -dz);
+				glVertex3f(dx, 0, -dz);
+				glVertex3f(dx, dy, -dz);
 
-			glColor3f( 1., 0., 0. );
+				//door side 1
+				glVertex3f(-dx, 0, -dz);
+				glVertex3f(-dx, -dy, -dz);
+				glVertex3f(-dx / doorMult, -dy, -dz);
+				glVertex3f(-dx / doorMult, 0, -dz);
+
+				//door side 2
+				glVertex3f(dx, 0, -dz);
+				glVertex3f(dx, -dy, -dz);
+				glVertex3f(dx / doorMult, -dy, -dz);
+				glVertex3f(dx / doorMult, 0, -dz);
+			}
+
+			
+			//wall2
 			glNormal3f(  1., 0., 0. );
-				glVertex3f(  dx, -dy,  dz );
-				glVertex3f(  dx, -dy, -dz );
-				glVertex3f(  dx,  dy, -dz );
-				glVertex3f(  dx,  dy,  dz );
+			if (headRoom.door2 == NULL) {
+				glVertex3f(dx, -dy, dz);
+				glVertex3f(dx, -dy, -dz);
+				glVertex3f(dx, dy, -dz);
+				glVertex3f(dx, dy, dz);
+			}
+			else {
+				glVertex3f(dx, 0, dz);
+				glVertex3f(dx, 0, -dz);
+				glVertex3f(dx, dy, -dz);
+				glVertex3f(dx, dy, dz);
 
+				glVertex3f(dx, 0, -dz);
+				glVertex3f(dx, -dy, -dz);
+				glVertex3f(dx, -dy, -dz / doorMult);
+				glVertex3f(dx, 0, -dz / doorMult);
+
+				glVertex3f(dx, 0, dz);
+				glVertex3f(dx, -dy, dz);
+				glVertex3f(dx, -dy, dz / doorMult);
+				glVertex3f(dx, 0, dz / doorMult);
+			}
+
+			glColor3f(0., 0., 0.5);
+			//wall3
 			glNormal3f( -1., 0., 0. );
-				glVertex3f( -dx, -dy,  dz );
-				glVertex3f( -dx,  dy,  dz );
-				glVertex3f( -dx,  dy, -dz );
-				glVertex3f( -dx, -dy, -dz );
+			if (headRoom.door3 == NULL) {
+				glVertex3f(-dx, -dy, dz);
+				glVertex3f(-dx, dy, dz);
+				glVertex3f(-dx, dy, -dz);
+				glVertex3f(-dx, -dy, -dz);
+			}
+			else {
+				glVertex3f(-dx, 0, dz);
+				glVertex3f(-dx, 0, -dz);
+				glVertex3f(-dx, dy, -dz);
+				glVertex3f(-dx, dy, dz);
 
-			glColor3f( 0., 1., 0. );
+				glVertex3f(-dx, 0, -dz);
+				glVertex3f(-dx, -dy, -dz);
+				glVertex3f(-dx, -dy, -dz / doorMult);
+				glVertex3f(-dx, 0, -dz / doorMult);
+
+				glVertex3f(-dx, 0, dz);
+				glVertex3f(-dx, -dy, dz);
+				glVertex3f(-dx, -dy, dz / doorMult);
+				glVertex3f(-dx, 0, dz / doorMult);
+			}
+
+			//ceiling
+			glColor3f(0.87, 0.72, 0.53);
 			glNormal3f( 0.,  1., 0. );
 				glVertex3f( -dx,  dy,  dz );
 				glVertex3f(  dx,  dy,  dz );
 				glVertex3f(  dx,  dy, -dz );
 				glVertex3f( -dx,  dy, -dz );
 
+			//floor
+			glColor3f(.5, 0.5, 0.5);
 			glNormal3f( 0., -1., 0. );
 				glVertex3f( -dx, -dy,  dz );
 				glVertex3f( -dx, -dy, -dz );
