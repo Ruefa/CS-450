@@ -1,6 +1,6 @@
 ﻿  sample.cpp
-c:\src\cs-450\final_project\sample.cpp(467): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-c:\src\cs-450\final_project\sample.cpp(538): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\src\cs-450\final_project\sample.cpp(1380): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\final_project\sample.cpp(489): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+c:\src\cs-450\final_project\sample.cpp(560): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\src\cs-450\final_project\sample.cpp(1395): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 room.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
   Sample.vcxproj -> C:\src\CS-450\Final_Project\.\Debug\Sample.exe

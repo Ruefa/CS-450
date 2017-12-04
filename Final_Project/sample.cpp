@@ -253,22 +253,15 @@ void addPoint(struct room *newRoom) {
 	headPoint.next = newPoint;
 }
 
-struct room * exists(struct room *curRoom, float x, float y, float z) {
-	struct room *roomBuffer = (struct room *)malloc(sizeof(struct room));
-
-	if (curRoom->x == x && curRoom->y == y && curRoom->z == z) {
-		return curRoom;
+struct room * exists(struct pointList *curPoint, float x, float y, float z) {
+	if (curPoint->x == x && curPoint->y == y && curPoint->z == z) {
+		return curPoint->roomOnPoint;
 	}
 	
-	roomBuffer = exists(curRoom->door0, x, y, z);
-	if (roomBuffer != NULL) {
-		return roomBuffer;
-	}
-
-	roomBuffer = exists(curRoom->door0, x, y, z);
-	{
-
-	}
+	if (curPoint->next != NULL)
+		return exists(curPoint->next, x, y, z);
+	else
+		return NULL;
 }
 
 void InitDungeon(struct room *curRoom) {
@@ -296,16 +289,20 @@ void InitDungeon(struct room *curRoom) {
 			switch (randDoor) {
 			case 0:
 				if (curRoom->door0 == NULL) {
-					curRoom->door0 = (struct room *)malloc(sizeof(struct room));
-					curRoom->door0->door0 = NULL;
-					curRoom->door0->door1 = curRoom;
-					curRoom->door0->door2 = NULL;
-					curRoom->door0->door3 = NULL;
-					curRoom->door0->x = curRoom->x;
-					curRoom->door0->y = curRoom->y;
-					curRoom->door0->z = curRoom->z + roomDistMult*dz;
-					InitDungeon(curRoom->door0);
-					created = true;
+					printf("%d\n", numRooms);
+					curRoom->door0 = exists(&headPoint, curRoom->x, curRoom->y, curRoom->z + roomDistMult*dz);
+					if (curRoom->door0 == NULL) {
+						curRoom->door0 = (struct room *)malloc(sizeof(struct room));
+						curRoom->door0->door0 = NULL;
+						curRoom->door0->door1 = curRoom;
+						curRoom->door0->door2 = NULL;
+						curRoom->door0->door3 = NULL;
+						curRoom->door0->x = curRoom->x;
+						curRoom->door0->y = curRoom->y;
+						curRoom->door0->z = curRoom->z + roomDistMult*dz;
+						InitDungeon(curRoom->door0);
+						created = true;
+					}
 				}
 				break;
 
@@ -358,7 +355,7 @@ void InitDungeon(struct room *curRoom) {
 				printf("Incorrect room number in door generation");
 				break;
 			}
-			if (curRoom->door0 != NULL && curRoom->door1 != NULL && curRoom->door2 != NULL && curRoom->door3 != NULL) {
+			if ((curRoom->door0 != NULL && curRoom->door1 != NULL && curRoom->door2 != NULL && curRoom->door3 != NULL) || numRooms >= 100) {
 				created = true;
 			}
 			else if (rand() % 4 == 0) {
