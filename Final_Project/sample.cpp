@@ -248,7 +248,7 @@ void InitDungeon(struct room *curRoom) {
 	srand(time(NULL));
 	randDoor = rand() % 4;
 
-	randDoor = 3;
+	randDoor = 0;
 	switch (randDoor) {
 		case 0:
 			curRoom->door0 = (struct room *)malloc(sizeof(struct room));
@@ -457,6 +457,27 @@ void roomLists(struct room *curRoom, struct room *prevRoom) {
 	}
 }
 
+void displayRooms(struct room *curRoom, struct room *prevRoom) {
+
+	glPushMatrix();
+	glTranslatef(curRoom->x, curRoom->y, curRoom->z);
+	glCallList(curRoom->wallList);
+	glPopMatrix();
+
+	if (curRoom->door0 != NULL && curRoom->door0 != prevRoom) {
+		displayRooms(curRoom->door0, curRoom);
+	}
+	if (curRoom->door1 != NULL && curRoom->door1 != prevRoom) {
+		displayRooms(curRoom->door1, curRoom);
+	}
+	if (curRoom->door2 != NULL && curRoom->door2 != prevRoom) {
+		displayRooms(curRoom->door2, curRoom);
+	}
+	if (curRoom->door3 != NULL && curRoom->door3 != prevRoom) {
+		displayRooms(curRoom->door3, curRoom);
+	}
+}
+
 // main program:
 
 int
@@ -638,7 +659,7 @@ Display( )
 
 	// draw the current object:
 
-	glPushMatrix();
+	/*glPushMatrix();
 	glTranslatef(headRoom.x, headRoom.y, headRoom.z);
 	glCallList( headRoom.wallList );
 	glPushMatrix();
@@ -647,7 +668,9 @@ Display( )
 	glPushMatrix();
 	glTranslatef(testRoom->x, testRoom->y, testRoom->z);
 	glCallList(testRoom->wallList);
-	glPushMatrix();
+	glPushMatrix();*/
+
+	displayRooms(&headRoom, NULL);
 
 	// swap the double-buffered framebuffers:
 
