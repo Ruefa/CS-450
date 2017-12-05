@@ -1,1 +1,1 @@
-rooms can be created in same place
+looks like rooms are sometimes still placed in same space

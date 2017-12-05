@@ -276,10 +276,9 @@ struct doorList * addDoor(struct doorList *newDoor) {
 	struct doorList *index;
 
 	if (newDoor == NULL) {
-		printf("should hit this");
 		newDoor = (struct doorList *)malloc(sizeof(doorList));
 		newDoor->ascending = false;
-		newDoor->yTrans = 1.;
+		newDoor->yTrans = 0.;
 	}
 	else {
 		index = headDoor.next;
@@ -302,9 +301,12 @@ void removeDoor(struct doorList *toRemove) {
 	struct doorList *prev;
 
 	index = headDoor.next;
+	prev = &headDoor;
 	while (index != NULL) {
+		printf("looping here");
 		if (index == toRemove) {
 			prev->next = index->next;
+			return;
 		}
 		index = prev;
 		index = index->next;
@@ -364,20 +366,26 @@ struct room * findRoom(struct room *curRoom, struct room *prevRoom, float x, flo
 struct doorList * findDoor() {
 	struct room *curRoom = findRoom(&headRoom, NULL, eyePos[0], eyePos[2]);
 
-	printf("%f, %f\n", eyePos[0], eyePos[2]);
-	printf("%f, %f\n", curRoom->x, curRoom->z);
-
-	if (eyePos[0] < curRoom->x + dx/2 && eyePos[0] > curRoom->x - dx/2 && eyePos[2] < curRoom->z + dz && eyePos[2] > curRoom->z + dz - dz / 2) {
-		curRoom->door_trans0 = addDoor(curRoom->door_trans0);
-	}
-	else if (eyePos[0] < curRoom->x + dx/2 && eyePos[0] > curRoom->x - dx/2 && eyePos[2] > curRoom->z - dz && eyePos[2] < curRoom->z - dz + dz / 2) {
-		printf("near a door1\n");
-	}
-	else if (eyePos[0] < curRoom->x + dx && eyePos[0] > curRoom->x + dx - dx/2 && eyePos[2] < curRoom->z + dz/2 && eyePos[2] > curRoom->z - dz/2) {
-		printf("near a door2\n");
-	}
-	else if (eyePos[0] > curRoom->x - dx && eyePos[0] < curRoom->x - dx + dx/2 && eyePos[2] < curRoom->z + dz/2 && eyePos[2] > curRoom->z - dz/2) {
-		printf("near a door3\n");
+	if (curRoom != NULL) {
+		if (eyePos[0] < curRoom->x + dx / 2 && eyePos[0] > curRoom->x - dx / 2 && eyePos[2] < curRoom->z + dz && eyePos[2] > curRoom->z + dz - dz / 2) {
+			curRoom->door_trans0 = addDoor(curRoom->door_trans0);
+			curRoom->door0->door_trans1 = addDoor(curRoom->door0->door_trans1);
+		}
+		else if (eyePos[0] < curRoom->x + dx / 2 && eyePos[0] > curRoom->x - dx / 2 && eyePos[2] > curRoom->z - dz && eyePos[2] < curRoom->z - dz + dz / 2) {
+			printf("near a door1\n");
+			curRoom->door_trans1 = addDoor(curRoom->door_trans1);
+			curRoom->door1->door_trans0 = addDoor(curRoom->door1->door_trans0);
+		}
+		else if (eyePos[0] < curRoom->x + dx && eyePos[0] > curRoom->x + dx - dx / 2 && eyePos[2] < curRoom->z + dz / 2 && eyePos[2] > curRoom->z - dz / 2) {
+			printf("near a door2\n");
+			curRoom->door_trans2 = addDoor(curRoom->door_trans2);
+			curRoom->door2->door_trans3 = addDoor(curRoom->door2->door_trans3);
+		}
+		else if (eyePos[0] > curRoom->x - dx && eyePos[0] < curRoom->x - dx + dx / 2 && eyePos[2] < curRoom->z + dz / 2 && eyePos[2] > curRoom->z - dz / 2) {
+			printf("near a door3\n");
+			curRoom->door_trans3 = addDoor(curRoom->door_trans3);
+			curRoom->door3->door_trans2 = addDoor(curRoom->door3->door_trans2);
+		}
 	}
 
 	return NULL;
@@ -460,6 +468,9 @@ void InitDungeon(struct room *curRoom) {
 					curRoom->door0->z = curRoom->z + roomDistMult*dz;
 
 					curRoom->door0->door_trans0 = NULL;
+					curRoom->door0->door_trans1 = NULL;
+					curRoom->door0->door_trans2 = NULL;
+					curRoom->door0->door_trans3 = NULL;
 					InitDungeon(curRoom->door0);
 					created = true;
 				}
@@ -476,6 +487,9 @@ void InitDungeon(struct room *curRoom) {
 					curRoom->door1->y = curRoom->y;
 					curRoom->door1->z = curRoom->z - roomDistMult*dz;
 					curRoom->door1->door_trans0 = NULL;
+					curRoom->door1->door_trans1 = NULL;
+					curRoom->door1->door_trans2 = NULL;
+					curRoom->door1->door_trans3 = NULL;
 					InitDungeon(curRoom->door1);
 					created = true;
 				}
@@ -492,6 +506,9 @@ void InitDungeon(struct room *curRoom) {
 					curRoom->door2->y = curRoom->y;
 					curRoom->door2->z = curRoom->z;
 					curRoom->door2->door_trans0 = NULL;
+					curRoom->door2->door_trans1 = NULL;
+					curRoom->door2->door_trans2 = NULL;
+					curRoom->door2->door_trans3 = NULL;
 					InitDungeon(curRoom->door2);
 					created = true;
 				}
@@ -508,6 +525,9 @@ void InitDungeon(struct room *curRoom) {
 					curRoom->door3->y = curRoom->y;
 					curRoom->door3->z = curRoom->z;
 					curRoom->door3->door_trans0 = NULL;
+					curRoom->door3->door_trans1 = NULL;
+					curRoom->door3->door_trans2 = NULL;
+					curRoom->door3->door_trans3 = NULL;
 					InitDungeon(curRoom->door3);
 					created = true;
 				}
@@ -692,7 +712,7 @@ void displayRooms(struct room *curRoom, struct room *prevRoom) {
 	if (curRoom->door0 != NULL) {
 		glPushMatrix();
 		if (curRoom->door_trans0 != NULL) {
-			glTranslatef(0., curRoom->door_trans0->yTrans, 0.1);
+			glTranslatef(0., curRoom->door_trans0->yTrans, 0.000001);
 		}
 		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
 		glCallList(doorDisplayList);
@@ -700,6 +720,9 @@ void displayRooms(struct room *curRoom, struct room *prevRoom) {
 	}
 	if (curRoom->door1 != NULL) {
 		glPushMatrix();
+		if (curRoom->door_trans1 != NULL) {
+			glTranslatef(0., curRoom->door_trans1->yTrans, -0.000001);
+		}
 		glTranslatef(0, 0, -2 * dz);
 		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
 		glCallList(doorDisplayList);
@@ -707,6 +730,9 @@ void displayRooms(struct room *curRoom, struct room *prevRoom) {
 	}
 	if (curRoom->door2 != NULL) {
 		glPushMatrix();
+		if (curRoom->door_trans2 != NULL) {
+			glTranslatef(0.000001, curRoom->door_trans2->yTrans, 0.);
+		}
 		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
 		glRotatef(90, 0., 1., 0.);
 		glCallList(doorDisplayList);
@@ -714,12 +740,16 @@ void displayRooms(struct room *curRoom, struct room *prevRoom) {
 	}
 	if (curRoom->door3 != NULL) {
 		glPushMatrix();
+		if (curRoom->door_trans3 != NULL) {
+			glTranslatef(-0.000001, curRoom->door_trans3->yTrans, 0.);
+		}
 		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
 		glRotatef(-90, 0., 1., 0.);
 		glCallList(doorDisplayList);
 		glPopMatrix();
 	}
 
+	//hallways
 	if (curRoom->door0 != NULL && curRoom->door0 != prevRoom) {
 		glPushMatrix();
 		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
@@ -826,8 +856,27 @@ main( int argc, char *argv[ ] )
 void
 Animate( )
 {
-	// put animation stuff in here -- change some global variables
-	// for Display( ) to find:
+	struct doorList *index;
+
+	index = headDoor.next;
+	while (index != NULL) {
+		if(!index->ascending)
+			index->yTrans += .05;
+		else 
+			index->yTrans -= .05;
+		if (index->yTrans >= 1.) {
+			index->ascending = true;
+			removeDoor(index);
+			index = &headDoor;
+		}
+		else if (index->yTrans <= 0.) {
+			index->yTrans = 0.;
+			index->ascending = false;
+			removeDoor(index);
+			index = &headDoor;
+		}
+		index = index->next;
+	}
 
 	// force a call to Display( ) next time it is convenient:
 

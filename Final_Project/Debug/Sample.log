@@ -1,6 +1,21 @@
 ﻿  sample.cpp
-c:\src\cs-450\final_project\sample.cpp(489): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-c:\src\cs-450\final_project\sample.cpp(560): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\src\cs-450\final_project\sample.cpp(1395): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\final_project\sample.cpp(672): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+c:\src\cs-450\final_project\sample.cpp(715): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+c:\src\cs-450\final_project\sample.cpp(724): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+c:\src\cs-450\final_project\sample.cpp(734): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+c:\src\cs-450\final_project\sample.cpp(744): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+c:\src\cs-450\final_project\sample.cpp(808): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\src\cs-450\final_project\sample.cpp(811): warning C4305: '=': truncation from 'double' to 'float'
+c:\src\cs-450\final_project\sample.cpp(864): warning C4305: '+=': truncation from 'double' to 'float'
+c:\src\cs-450\final_project\sample.cpp(866): warning C4305: '-=': truncation from 'double' to 'float'
+c:\src\cs-450\final_project\sample.cpp(1333): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+c:\src\cs-450\final_project\sample.cpp(1353): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+c:\src\cs-450\final_project\sample.cpp(1378): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\src\cs-450\final_project\sample.cpp(1379): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\src\cs-450\final_project\sample.cpp(1414): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\final_project\sample.cpp(1415): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\final_project\sample.cpp(1420): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\final_project\sample.cpp(1421): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\src\cs-450\final_project\sample.cpp(1734): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 room.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
   Sample.vcxproj -> C:\src\CS-450\Final_Project\.\Debug\Sample.exe
