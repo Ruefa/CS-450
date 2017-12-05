@@ -239,7 +239,11 @@ struct room {
 	struct room *door1 = NULL;
 	struct room *door2 = NULL;
 	struct room *door3 = NULL;
-	float door0_trans = 0;
+
+	struct doorList *door_trans0 = NULL;
+	struct doorList *door_trans1 = NULL;
+	struct doorList *door_trans2 = NULL;
+	struct doorList *door_trans3 = NULL;
 }headRoom;
 
 struct pointList {
@@ -249,8 +253,8 @@ struct pointList {
 }headPoint;
 
 struct doorList {
-	float x, y, z;
-	float *yTrans;
+	//float x, y, z;
+	float yTrans = 0;
 	bool ascending = false;
 	struct doorList *next = NULL;
 }headDoor;
@@ -267,17 +271,44 @@ void addPoint(struct room *newRoom) {
 	headPoint.next = newPoint;
 }
 
-void addRoom(float x, float y, float z, float *translate) {
-	struct doorList *newDoor = (struct doorList *)malloc(sizeof(doorList));
+struct doorList * addDoor(struct doorList *newDoor) {
+	//struct doorList *newDoor = (struct doorList *)malloc(sizeof(doorList));
+	struct doorList *index;
 
-	newDoor->x = x;
-	newDoor->y = y;
-	newDoor->z = z;
-	newDoor->ascending = false;
-	newDoor->yTrans = translate;
+	if (newDoor == NULL) {
+		printf("should hit this");
+		newDoor = (struct doorList *)malloc(sizeof(doorList));
+		newDoor->ascending = false;
+		newDoor->yTrans = 1.;
+	}
+	else {
+		index = headDoor.next;
+		while (index != NULL) {
+			if (index == newDoor) {
+				return newDoor;
+			}
+			index = index->next;
+		}
+	}
 
 	newDoor->next = headDoor.next;
 	headDoor.next = newDoor;
+
+	return newDoor;
+}
+
+void removeDoor(struct doorList *toRemove) {
+	struct doorList *index;
+	struct doorList *prev;
+
+	index = headDoor.next;
+	while (index != NULL) {
+		if (index == toRemove) {
+			prev->next = index->next;
+		}
+		index = prev;
+		index = index->next;
+	}
 }
 
 struct room * exists(struct pointList *curPoint, float x, float y, float z) {
@@ -335,6 +366,19 @@ struct doorList * findDoor() {
 
 	printf("%f, %f\n", eyePos[0], eyePos[2]);
 	printf("%f, %f\n", curRoom->x, curRoom->z);
+
+	if (eyePos[0] < curRoom->x + dx/2 && eyePos[0] > curRoom->x - dx/2 && eyePos[2] < curRoom->z + dz && eyePos[2] > curRoom->z + dz - dz / 2) {
+		curRoom->door_trans0 = addDoor(curRoom->door_trans0);
+	}
+	else if (eyePos[0] < curRoom->x + dx/2 && eyePos[0] > curRoom->x - dx/2 && eyePos[2] > curRoom->z - dz && eyePos[2] < curRoom->z - dz + dz / 2) {
+		printf("near a door1\n");
+	}
+	else if (eyePos[0] < curRoom->x + dx && eyePos[0] > curRoom->x + dx - dx/2 && eyePos[2] < curRoom->z + dz/2 && eyePos[2] > curRoom->z - dz/2) {
+		printf("near a door2\n");
+	}
+	else if (eyePos[0] > curRoom->x - dx && eyePos[0] < curRoom->x - dx + dx/2 && eyePos[2] < curRoom->z + dz/2 && eyePos[2] > curRoom->z - dz/2) {
+		printf("near a door3\n");
+	}
 
 	return NULL;
 }
@@ -414,6 +458,8 @@ void InitDungeon(struct room *curRoom) {
 					curRoom->door0->x = curRoom->x;
 					curRoom->door0->y = curRoom->y;
 					curRoom->door0->z = curRoom->z + roomDistMult*dz;
+
+					curRoom->door0->door_trans0 = NULL;
 					InitDungeon(curRoom->door0);
 					created = true;
 				}
@@ -429,6 +475,7 @@ void InitDungeon(struct room *curRoom) {
 					curRoom->door1->x = curRoom->x;
 					curRoom->door1->y = curRoom->y;
 					curRoom->door1->z = curRoom->z - roomDistMult*dz;
+					curRoom->door1->door_trans0 = NULL;
 					InitDungeon(curRoom->door1);
 					created = true;
 				}
@@ -444,6 +491,7 @@ void InitDungeon(struct room *curRoom) {
 					curRoom->door2->x = curRoom->x + roomDistMult*dx;
 					curRoom->door2->y = curRoom->y;
 					curRoom->door2->z = curRoom->z;
+					curRoom->door2->door_trans0 = NULL;
 					InitDungeon(curRoom->door2);
 					created = true;
 				}
@@ -459,6 +507,7 @@ void InitDungeon(struct room *curRoom) {
 					curRoom->door3->x = curRoom->x - roomDistMult*dx;
 					curRoom->door3->y = curRoom->y;
 					curRoom->door3->z = curRoom->z;
+					curRoom->door3->door_trans0 = NULL;
 					InitDungeon(curRoom->door3);
 					created = true;
 				}
@@ -642,6 +691,9 @@ void displayRooms(struct room *curRoom, struct room *prevRoom) {
 	//draw second door from previous room
 	if (curRoom->door0 != NULL) {
 		glPushMatrix();
+		if (curRoom->door_trans0 != NULL) {
+			glTranslatef(0., curRoom->door_trans0->yTrans, 0.1);
+		}
 		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
 		glCallList(doorDisplayList);
 		glPopMatrix();
@@ -1181,7 +1233,7 @@ InitGraphics( )
 	glutTabletButtonFunc( NULL );
 	glutMenuStateFunc( NULL );
 	glutTimerFunc( -1, NULL, 0 );
-	glutIdleFunc( NULL );
+	glutIdleFunc( Animate );
 
 	// init glew (a window must be open to do this):
 
