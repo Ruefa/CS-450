@@ -224,6 +224,7 @@ float dy = BOXSIZE / 2.f;
 float dz = BOXSIZE / 2.f;
 float doorMult = 3.5;
 float roomDistMult = 3.;
+GLuint hallwayList;
 
 int numRooms = 0;
 struct room {
@@ -267,6 +268,7 @@ struct room * exists(struct pointList *curPoint, float x, float y, float z) {
 void InitDungeon(struct room *curRoom) {
 	int randDoor;
 	bool created = false;
+	bool *existing = (bool *)malloc(sizeof(bool)*3);
 
 	//initialize head nodes for tree and list structures
 	if (numRooms == 0) {
@@ -279,8 +281,49 @@ void InitDungeon(struct room *curRoom) {
 		headPoint.z = 0.;
 		headPoint.roomOnPoint = &headRoom;
 	}
+	else {
+		addPoint(curRoom);
+	}
 
 	numRooms++;
+
+	// Coding myself out of a corner
+	if (curRoom->door0 != NULL) {
+		existing[0] = true;
+	}
+	else if (exists(&headPoint, curRoom->x, curRoom->y, curRoom->z + roomDistMult*dz) != NULL) {
+		existing[0] = true;
+	}
+	else {
+		existing[0] = false;
+	}
+	if (curRoom->door1 != NULL) {
+		existing[1] = true;
+	}
+	else if (exists(&headPoint, curRoom->x, curRoom->y, curRoom->z - roomDistMult*dz) != NULL) {
+		existing[1] = true;
+	}
+	else {
+		existing[1] = false;
+	}
+	if (curRoom->door2 != NULL) {
+		existing[2] = true;
+	}
+	else if (exists(&headPoint, curRoom->x + roomDistMult*dx, curRoom->y, curRoom->z) != NULL) {
+		existing[2] = true;
+	}
+	else {
+		existing[2] = false;
+	}
+	if (curRoom->door3 != NULL) {
+		existing[3] = true;
+	}
+	else if (exists(&headPoint, curRoom->x - roomDistMult*dx, curRoom->y, curRoom->z) != NULL) {
+		existing[3] = true;
+	}
+	else {
+		existing[3] = false;
+	}
 
 	if (numRooms < 100) {
 		while (!created) {
@@ -288,26 +331,22 @@ void InitDungeon(struct room *curRoom) {
 
 			switch (randDoor) {
 			case 0:
-				if (curRoom->door0 == NULL) {
-					printf("%d\n", numRooms);
-					curRoom->door0 = exists(&headPoint, curRoom->x, curRoom->y, curRoom->z + roomDistMult*dz);
-					if (curRoom->door0 == NULL) {
-						curRoom->door0 = (struct room *)malloc(sizeof(struct room));
-						curRoom->door0->door0 = NULL;
-						curRoom->door0->door1 = curRoom;
-						curRoom->door0->door2 = NULL;
-						curRoom->door0->door3 = NULL;
-						curRoom->door0->x = curRoom->x;
-						curRoom->door0->y = curRoom->y;
-						curRoom->door0->z = curRoom->z + roomDistMult*dz;
-						InitDungeon(curRoom->door0);
-						created = true;
-					}
+				if (!existing[0]) {
+					curRoom->door0 = (struct room *)malloc(sizeof(struct room));
+					curRoom->door0->door0 = NULL;
+					curRoom->door0->door1 = curRoom;
+					curRoom->door0->door2 = NULL;
+					curRoom->door0->door3 = NULL;
+					curRoom->door0->x = curRoom->x;
+					curRoom->door0->y = curRoom->y;
+					curRoom->door0->z = curRoom->z + roomDistMult*dz;
+					InitDungeon(curRoom->door0);
+					created = true;
 				}
 				break;
 
 			case 1:
-				if (curRoom->door1 == NULL) {
+				if (!existing[1]) {
 					curRoom->door1 = (struct room *)malloc(sizeof(struct room));
 					curRoom->door1->door0 = curRoom;
 					curRoom->door1->door1 = NULL;
@@ -322,7 +361,7 @@ void InitDungeon(struct room *curRoom) {
 				break;
 
 			case 2:
-				if (curRoom->door2 == NULL) {
+				if (!existing[2]) {
 					curRoom->door2 = (struct room *)malloc(sizeof(struct room));
 					curRoom->door2->door0 = NULL;
 					curRoom->door2->door1 = NULL;
@@ -337,7 +376,7 @@ void InitDungeon(struct room *curRoom) {
 				break;
 
 			case 3:
-				if (curRoom->door3 == NULL) {
+				if (!existing[3]) {
 					curRoom->door3 = (struct room *)malloc(sizeof(struct room));
 					curRoom->door3->door0 = NULL;
 					curRoom->door3->door1 = NULL;
@@ -355,7 +394,8 @@ void InitDungeon(struct room *curRoom) {
 				printf("Incorrect room number in door generation");
 				break;
 			}
-			if ((curRoom->door0 != NULL && curRoom->door1 != NULL && curRoom->door2 != NULL && curRoom->door3 != NULL) || numRooms >= 100) {
+
+			if ((existing[0] && existing[1] && existing[2] && existing[3]) || numRooms >= 100) {
 				created = true;
 			}
 			else if (rand() % 4 == 0) {
@@ -526,15 +566,38 @@ void displayRooms(struct room *curRoom, struct room *prevRoom) {
 	glPopMatrix();
 
 	if (curRoom->door0 != NULL && curRoom->door0 != prevRoom) {
+		glPushMatrix();
+		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
+		glCallList(hallwayList);
+		glPopMatrix();
+
 		displayRooms(curRoom->door0, curRoom);
 	}
 	if (curRoom->door1 != NULL && curRoom->door1 != prevRoom) {
+		glPushMatrix();
+		glTranslatef(0, 0, -3 * dz);
+		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
+		glCallList(hallwayList);
+		glPopMatrix();
+
 		displayRooms(curRoom->door1, curRoom);
 	}
 	if (curRoom->door2 != NULL && curRoom->door2 != prevRoom) {
+		glPushMatrix();
+		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
+		glRotatef(90, 0., 1., 0.);
+		glCallList(hallwayList);
+		glPopMatrix();
+
 		displayRooms(curRoom->door2, curRoom);
 	}
 	if (curRoom->door3 != NULL && curRoom->door3 != prevRoom) {
+		glPushMatrix();
+		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
+		glRotatef(-90, 0., 1., 0.);
+		glCallList(hallwayList);
+		glPopMatrix();
+
 		displayRooms(curRoom->door3, curRoom);
 	}
 }
@@ -722,18 +785,9 @@ Display( )
 
 	// draw the current object:
 
-	/*glPushMatrix();
-	glTranslatef(headRoom.x, headRoom.y, headRoom.z);
-	glCallList( headRoom.wallList );
-	glPushMatrix();
-
-	struct room *testRoom = headRoom.door3;
-	glPushMatrix();
-	glTranslatef(testRoom->x, testRoom->y, testRoom->z);
-	glCallList(testRoom->wallList);
-	glPushMatrix();*/
-
 	displayRooms(&headRoom, NULL);
+
+	//glCallList(hallwayList);
 
 	// swap the double-buffered framebuffers:
 
@@ -1048,6 +1102,34 @@ InitLists( )
 
 	roomLists(&headRoom, NULL);
 
+	hallwayList = glGenLists(1);
+	glNewList(hallwayList, GL_COMPILE);
+
+	glBegin(GL_QUADS);
+
+		glColor3f(0.87, 0.72, 0.53);
+		glVertex3f(-dx / doorMult, 0, dz);
+		glVertex3f(-dx / doorMult, -dy, dz);
+		glVertex3f(-dx / doorMult, -dy, dz*2);
+		glVertex3f(-dx / doorMult, 0, dz*2);
+
+		glVertex3f(dx / doorMult, 0, dz);
+		glVertex3f(dx / doorMult, -dy, dz);
+		glVertex3f(dx / doorMult, -dy, dz*2);
+		glVertex3f(dx / doorMult, 0, dz*2);
+
+		glVertex3f(-dx / doorMult, 0, dz);
+		glVertex3f(dx / doorMult, 0, dz);
+		glVertex3f(dx / doorMult, 0, dz*2);
+		glVertex3f(-dx / doorMult, 0, dz*2);
+
+		glVertex3f(-dx / doorMult, -dy, dz);
+		glVertex3f(dx / doorMult, -dy, dz);
+		glVertex3f(dx / doorMult, -dy, dz*2);
+		glVertex3f(-dx / doorMult, -dy, dz*2);
+
+	glEnd();
+	glEndList();
 
 	// create the axes:
 
