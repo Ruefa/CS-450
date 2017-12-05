@@ -225,6 +225,11 @@ float dz = BOXSIZE / 2.f;
 float doorMult = 3.5;
 float roomDistMult = 3.;
 GLuint hallwayList;
+GLuint doorList;
+
+float lookAngle = 0.0;
+float eyePos[3];
+float lookPos[3];
 
 int numRooms = 0;
 struct room {
@@ -565,6 +570,35 @@ void displayRooms(struct room *curRoom, struct room *prevRoom) {
 	glCallList(curRoom->wallList);
 	glPopMatrix();
 
+	//draw second door from previous room
+	if (curRoom->door0 != NULL) {
+		glPushMatrix();
+		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
+		glCallList(doorList);
+		glPopMatrix();
+	}
+	if (curRoom->door1 != NULL) {
+		glPushMatrix();
+		glTranslatef(0, 0, -2 * dz);
+		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
+		glCallList(doorList);
+		glPopMatrix();
+	}
+	if (curRoom->door2 != NULL) {
+		glPushMatrix();
+		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
+		glRotatef(90, 0., 1., 0.);
+		glCallList(doorList);
+		glPopMatrix();
+	}
+	if (curRoom->door3 != NULL) {
+		glPushMatrix();
+		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
+		glRotatef(-90, 0., 1., 0.);
+		glCallList(doorList);
+		glPopMatrix();
+	}
+
 	if (curRoom->door0 != NULL && curRoom->door0 != prevRoom) {
 		glPushMatrix();
 		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
@@ -621,6 +655,14 @@ main( int argc, char *argv[ ] )
 	// init dungeon
 
 	srand(time(NULL));
+
+	eyePos[0] = 0.;
+	eyePos[1] = -.3;
+	eyePos[2] = 0.;
+
+	lookPos[0] = 0.;
+	lookPos[1] = eyePos[1];
+	lookPos[2] = 1.;
 
 	InitDungeon(&headRoom);
 
@@ -736,7 +778,7 @@ Display( )
 
 	// set the eye position, look-at position, and up-vector:
 
-	gluLookAt( 0., 0., 3.,     0., 0., 0.,     0., 1., 0. );
+	gluLookAt( eyePos[0], eyePos[1], eyePos[2],    eyePos[0] + lookPos[0], lookPos[1], eyePos[2] + lookPos[2],     0., 1., 0. );
 
 
 	// rotate the scene:
@@ -1131,6 +1173,20 @@ InitLists( )
 	glEnd();
 	glEndList();
 
+	doorList = glGenLists(1);
+	glNewList(doorList, GL_COMPILE);
+
+	glBegin(GL_QUADS);
+
+	glColor3f(1., 0., 0.);
+		glVertex3f(-dx / doorMult, 0, dz);
+		glVertex3f(-dx / doorMult, -dy, dz);
+		glVertex3f(dx / doorMult, -dy, dz);
+		glVertex3f(dx / doorMult, 0, dz);
+
+	glEnd();
+	glEndList();
+
 	// create the axes:
 
 	AxesList = glGenLists( 1 );
@@ -1147,6 +1203,9 @@ InitLists( )
 void
 Keyboard( unsigned char c, int x, int y )
 {
+	float units = 0.1;
+	float angleUnits = 0.05;
+
 	if( DebugOn != 0 )
 		fprintf( stderr, "Keyboard: '%c' (0x%0x)\n", c, c );
 
@@ -1167,6 +1226,28 @@ Keyboard( unsigned char c, int x, int y )
 		case ESCAPE:
 			DoMainMenu( QUIT );	// will not return here
 			break;				// happy compiler
+
+		case 'w':
+			eyePos[0] += lookPos[0] * units;
+			eyePos[2] += lookPos[2] * units;
+			break;
+
+		case 's':
+			eyePos[0] -= lookPos[0] * units;
+			eyePos[2] -= lookPos[2] * units;
+			break;
+
+		case 'd':
+			lookAngle += angleUnits;
+			lookPos[0] = sin(lookAngle);
+			lookPos[2] = -cos(lookAngle);
+			break;
+
+		case 'a':
+			lookAngle -= angleUnits;
+			lookPos[0] = sin(lookAngle);
+			lookPos[2] = -cos(lookAngle);
+			break;
 
 		default:
 			fprintf( stderr, "Don't know what to do with keyboard hit: '%c' (0x%0x)\n", c, c );
