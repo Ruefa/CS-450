@@ -225,7 +225,7 @@ float dz = BOXSIZE / 2.f;
 float doorMult = 3.5;
 float roomDistMult = 3.;
 GLuint hallwayList;
-GLuint doorList;
+GLuint doorDisplayList;
 
 float lookAngle = 0.0;
 float eyePos[3];
@@ -239,6 +239,7 @@ struct room {
 	struct room *door1 = NULL;
 	struct room *door2 = NULL;
 	struct room *door3 = NULL;
+	float door0_trans = 0;
 }headRoom;
 
 struct pointList {
@@ -246,6 +247,13 @@ struct pointList {
 	struct pointList *next = NULL;
 	struct room *roomOnPoint = NULL;
 }headPoint;
+
+struct doorList {
+	float x, y, z;
+	float *yTrans;
+	bool ascending = false;
+	struct doorList *next = NULL;
+}headDoor;
 
 void addPoint(struct room *newRoom) {
 	struct pointList *newPoint = (struct pointList *)malloc(sizeof(pointList));
@@ -259,6 +267,19 @@ void addPoint(struct room *newRoom) {
 	headPoint.next = newPoint;
 }
 
+void addRoom(float x, float y, float z, float *translate) {
+	struct doorList *newDoor = (struct doorList *)malloc(sizeof(doorList));
+
+	newDoor->x = x;
+	newDoor->y = y;
+	newDoor->z = z;
+	newDoor->ascending = false;
+	newDoor->yTrans = translate;
+
+	newDoor->next = headDoor.next;
+	headDoor.next = newDoor;
+}
+
 struct room * exists(struct pointList *curPoint, float x, float y, float z) {
 	if (curPoint->x == x && curPoint->y == y && curPoint->z == z) {
 		return curPoint->roomOnPoint;
@@ -268,6 +289,54 @@ struct room * exists(struct pointList *curPoint, float x, float y, float z) {
 		return exists(curPoint->next, x, y, z);
 	else
 		return NULL;
+}
+
+struct room * findRoom(struct room *curRoom, struct room *prevRoom, float x, float z) {
+	struct room *bufferRoom;
+
+	if (x > curRoom->x - dx && x < curRoom->x + dx && z > curRoom->z - dz && z < curRoom->z + dz) {
+		return curRoom;
+	}
+
+	if (curRoom->door0 != NULL && curRoom->door0 != prevRoom) {
+		bufferRoom = findRoom(curRoom->door0, curRoom, x, z);
+
+		if (bufferRoom != NULL) {
+			return bufferRoom;
+		}
+	}
+	if (curRoom->door1 != NULL && curRoom->door1 != prevRoom) {
+		bufferRoom = findRoom(curRoom->door1, curRoom, x, z);
+
+		if (bufferRoom != NULL) {
+			return bufferRoom;
+		}
+	}
+	if (curRoom->door2 != NULL && curRoom->door2 != prevRoom) {
+		bufferRoom = findRoom(curRoom->door2, curRoom, x, z);
+
+		if (bufferRoom != NULL) {
+			return bufferRoom;
+		}
+	}
+	if (curRoom->door3 != NULL && curRoom->door3 != prevRoom) {
+		bufferRoom = findRoom(curRoom->door3, curRoom, x, z);
+
+		if (bufferRoom != NULL) {
+			return bufferRoom;
+		}
+	}
+
+	return NULL;
+}
+
+struct doorList * findDoor() {
+	struct room *curRoom = findRoom(&headRoom, NULL, eyePos[0], eyePos[2]);
+
+	printf("%f, %f\n", eyePos[0], eyePos[2]);
+	printf("%f, %f\n", curRoom->x, curRoom->z);
+
+	return NULL;
 }
 
 void InitDungeon(struct room *curRoom) {
@@ -574,28 +643,28 @@ void displayRooms(struct room *curRoom, struct room *prevRoom) {
 	if (curRoom->door0 != NULL) {
 		glPushMatrix();
 		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
-		glCallList(doorList);
+		glCallList(doorDisplayList);
 		glPopMatrix();
 	}
 	if (curRoom->door1 != NULL) {
 		glPushMatrix();
 		glTranslatef(0, 0, -2 * dz);
 		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
-		glCallList(doorList);
+		glCallList(doorDisplayList);
 		glPopMatrix();
 	}
 	if (curRoom->door2 != NULL) {
 		glPushMatrix();
 		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
 		glRotatef(90, 0., 1., 0.);
-		glCallList(doorList);
+		glCallList(doorDisplayList);
 		glPopMatrix();
 	}
 	if (curRoom->door3 != NULL) {
 		glPushMatrix();
 		glTranslatef(curRoom->x, curRoom->y, curRoom->z);
 		glRotatef(-90, 0., 1., 0.);
-		glCallList(doorList);
+		glCallList(doorDisplayList);
 		glPopMatrix();
 	}
 
@@ -1149,7 +1218,7 @@ InitLists( )
 
 	glBegin(GL_QUADS);
 
-		glColor3f(0.87, 0.72, 0.53);
+		glColor3f(0., 0., 0.5);
 		glVertex3f(-dx / doorMult, 0, dz);
 		glVertex3f(-dx / doorMult, -dy, dz);
 		glVertex3f(-dx / doorMult, -dy, dz*2);
@@ -1160,11 +1229,13 @@ InitLists( )
 		glVertex3f(dx / doorMult, -dy, dz*2);
 		glVertex3f(dx / doorMult, 0, dz*2);
 
+		glColor3f(0.87, 0.72, 0.53);
 		glVertex3f(-dx / doorMult, 0, dz);
 		glVertex3f(dx / doorMult, 0, dz);
 		glVertex3f(dx / doorMult, 0, dz*2);
 		glVertex3f(-dx / doorMult, 0, dz*2);
 
+		glColor3f(0.5, 0.5, 0.5);
 		glVertex3f(-dx / doorMult, -dy, dz);
 		glVertex3f(dx / doorMult, -dy, dz);
 		glVertex3f(dx / doorMult, -dy, dz*2);
@@ -1173,12 +1244,12 @@ InitLists( )
 	glEnd();
 	glEndList();
 
-	doorList = glGenLists(1);
-	glNewList(doorList, GL_COMPILE);
+	doorDisplayList = glGenLists(1);
+	glNewList(doorDisplayList, GL_COMPILE);
 
 	glBegin(GL_QUADS);
 
-	glColor3f(1., 0., 0.);
+	glColor3f(.16, 0.1, 0.05);
 		glVertex3f(-dx / doorMult, 0, dz);
 		glVertex3f(-dx / doorMult, -dy, dz);
 		glVertex3f(dx / doorMult, -dy, dz);
@@ -1247,6 +1318,10 @@ Keyboard( unsigned char c, int x, int y )
 			lookAngle -= angleUnits;
 			lookPos[0] = sin(lookAngle);
 			lookPos[2] = -cos(lookAngle);
+			break;
+
+		case 'e':
+			findDoor();
 			break;
 
 		default:
