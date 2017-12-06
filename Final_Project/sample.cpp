@@ -253,7 +253,6 @@ struct pointList {
 }headPoint;
 
 struct doorList {
-	//float x, y, z;
 	float yTrans = 0;
 	bool ascending = false;
 	struct doorList *next = NULL;
@@ -272,7 +271,6 @@ void addPoint(struct room *newRoom) {
 }
 
 struct doorList * addDoor(struct doorList *newDoor) {
-	//struct doorList *newDoor = (struct doorList *)malloc(sizeof(doorList));
 	struct doorList *index;
 
 	if (newDoor == NULL) {
@@ -303,7 +301,6 @@ void removeDoor(struct doorList *toRemove) {
 	index = headDoor.next;
 	prev = &headDoor;
 	while (index != NULL) {
-		printf("looping here");
 		if (index == toRemove) {
 			prev->next = index->next;
 			return;
@@ -372,17 +369,14 @@ struct doorList * findDoor() {
 			curRoom->door0->door_trans1 = addDoor(curRoom->door0->door_trans1);
 		}
 		else if (eyePos[0] < curRoom->x + dx / 2 && eyePos[0] > curRoom->x - dx / 2 && eyePos[2] > curRoom->z - dz && eyePos[2] < curRoom->z - dz + dz / 2) {
-			printf("near a door1\n");
 			curRoom->door_trans1 = addDoor(curRoom->door_trans1);
 			curRoom->door1->door_trans0 = addDoor(curRoom->door1->door_trans0);
 		}
 		else if (eyePos[0] < curRoom->x + dx && eyePos[0] > curRoom->x + dx - dx / 2 && eyePos[2] < curRoom->z + dz / 2 && eyePos[2] > curRoom->z - dz / 2) {
-			printf("near a door2\n");
 			curRoom->door_trans2 = addDoor(curRoom->door_trans2);
 			curRoom->door2->door_trans3 = addDoor(curRoom->door2->door_trans3);
 		}
 		else if (eyePos[0] > curRoom->x - dx && eyePos[0] < curRoom->x - dx + dx / 2 && eyePos[2] < curRoom->z + dz / 2 && eyePos[2] > curRoom->z - dz / 2) {
-			printf("near a door3\n");
 			curRoom->door_trans3 = addDoor(curRoom->door_trans3);
 			curRoom->door3->door_trans2 = addDoor(curRoom->door3->door_trans2);
 		}
@@ -472,6 +466,7 @@ void InitDungeon(struct room *curRoom) {
 					curRoom->door0->door_trans2 = NULL;
 					curRoom->door0->door_trans3 = NULL;
 					InitDungeon(curRoom->door0);
+					existing[0] = true;
 					created = true;
 				}
 				break;
@@ -491,6 +486,7 @@ void InitDungeon(struct room *curRoom) {
 					curRoom->door1->door_trans2 = NULL;
 					curRoom->door1->door_trans3 = NULL;
 					InitDungeon(curRoom->door1);
+					existing[1] = true;
 					created = true;
 				}
 				break;
@@ -510,6 +506,7 @@ void InitDungeon(struct room *curRoom) {
 					curRoom->door2->door_trans2 = NULL;
 					curRoom->door2->door_trans3 = NULL;
 					InitDungeon(curRoom->door2);
+					existing[2] = true;
 					created = true;
 				}
 				break;
@@ -529,6 +526,7 @@ void InitDungeon(struct room *curRoom) {
 					curRoom->door3->door_trans2 = NULL;
 					curRoom->door3->door_trans3 = NULL;
 					InitDungeon(curRoom->door3);
+					existing[3] = true;
 					created = true;
 				}
 				break;
@@ -541,8 +539,13 @@ void InitDungeon(struct room *curRoom) {
 			if ((existing[0] && existing[1] && existing[2] && existing[3]) || numRooms >= 100) {
 				created = true;
 			}
-			else if (rand() % 4 == 0) {
+			else if (rand() % 3 == 0) {
 				created = false;
+			}
+			else if (numRooms > 20) {
+				if (rand() % 4 == 0) {
+					created = true;
+				}
 			}
 		}
 	}
@@ -554,7 +557,8 @@ void roomLists(struct room *curRoom, struct room *prevRoom) {
 
 	glBegin(GL_QUADS);
 
-	glColor3f(0., 0.5, 0.);
+	//glColor3f(0., 0.5, 0.);
+	glColor3f((float)rand()/(float)RAND_MAX , (float)rand()/(float)RAND_MAX, (float)rand()/(float)RAND_MAX);
 
 	//wall0
 	glNormal3f(0., 0., 1.);
@@ -983,11 +987,11 @@ Display( )
 
 	// possibly draw the axes:
 
-	if( AxesOn != 0 )
+	/*if( AxesOn != 0 )
 	{
 		glColor3fv( &Colors[WhichColor][0] );
 		glCallList( AxesList );
-	}
+	}*/
 
 
 	// since we are using glScalef( ), be sure normals get unitized:
@@ -1376,7 +1380,7 @@ void
 Keyboard( unsigned char c, int x, int y )
 {
 	float units = 0.1;
-	float angleUnits = 0.05;
+	float angleUnits = 0.1;
 
 	if( DebugOn != 0 )
 		fprintf( stderr, "Keyboard: '%c' (0x%0x)\n", c, c );
